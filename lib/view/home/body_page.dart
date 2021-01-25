@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/item_view/item_body_right.dart';
 import 'package:flutter_project/item_view/item_menu_left.dart';
+import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
+import 'package:flutter_project/presenter/home/body_presenter.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class BodyPage extends StatefulWidget {
@@ -98,9 +100,17 @@ class ContainBodyRight extends StatefulWidget {
   _ContainBodyRightState createState() => _ContainBodyRightState();
 }
 
-class _ContainBodyRightState extends State<ContainBodyRight> {
+class _ContainBodyRightState extends State<ContainBodyRight> implements BodyContract {
 
   List<int> itemList = [1, 2, 3, 4 ,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  BodyPresenter bodyPresenter;
+
+  @override
+  void initState() {
+    bodyPresenter = new BodyPresenter(this);
+    bodyPresenter.getListData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,5 +218,15 @@ class _ContainBodyRightState extends State<ContainBodyRight> {
         ],
       ),
     );
+  }
+
+  @override
+  void goToDetail(BodyRight bodyRight) {
+
+  }
+
+  @override
+  void showMessageError(String message, BuildContext buildContext) {
+
   }
 }
