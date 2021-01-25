@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/item_view/item_body_right.dart';
 import 'package:flutter_project/item_view/item_menu_left.dart';
+import 'package:flutter_project/model/menu_left.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class BodyPage extends StatefulWidget {
@@ -14,7 +15,35 @@ class BodyPage extends StatefulWidget {
 
 class _BodyPageState extends State<BodyPage> {
 
-  List<String> categoriesList = ['Home', 'New in', 'Coats', 'KnitWear', 'Tops'];
+  var itemPos = 0;
+  List<MenuLeft> menuLeft;
+
+  @override
+  void initState() {
+    super.initState();
+    menuLeft = MenuLeft().getListData();
+    menuLeft[itemPos].isSelected = true;
+  }
+
+  void changeButtonState(int index, MenuLeft data) {
+    setState(() {
+      if (itemPos != index) {
+        menuLeft[itemPos].isSelected = !menuLeft[itemPos].isSelected;
+        if (menuLeft[itemPos].isSelected) {
+          ItemMenuLeft(menu: data, isFirst: index == 0 ? true : false);
+        } else {
+          ItemMenuLeftFocus(menu: data, isFirst: index == 0 ? true : false);
+        }
+        itemPos = index;
+        menuLeft[index].isSelected = !menuLeft[index].isSelected;
+        if (menuLeft[index].isSelected) {
+          ItemMenuLeft(menu: data, isFirst: index == 0 ? true : false);
+        } else {
+          ItemMenuLeftFocus(menu: data, isFirst: index == 0 ? true : false);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +59,20 @@ class _BodyPageState extends State<BodyPage> {
           Container(
             width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.13,
             child: ListView.builder(
-              itemCount: categoriesList.length,
+              itemCount: menuLeft.length,
               itemBuilder: (context, i) {
-                return InkWell(
+                return menuLeft[i].isSelected ? InkWell(
                   hoverColor: Colors.white,
                   onTap: (){
-
+                    changeButtonState(i, menuLeft[i]);
                   },
-                  child: ItemMenuLeft(title: categoriesList[i], isFirst: i == 0 ? true : false),
+                  child: ItemMenuLeftFocus(menu: menuLeft[i], isFirst: i == 0 ? true : false),
+                ) : InkWell(
+                  hoverColor: Colors.white,
+                  onTap: (){
+                    changeButtonState(i, menuLeft[i]);
+                  },
+                  child: ItemMenuLeft(menu: menuLeft[i], isFirst: i == 0 ? true : false),
                 );
               },
             ),

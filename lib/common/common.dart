@@ -4,4 +4,6 @@ class Common {
 
   //STATIC WEB URL
   static const String BASE_URL = "https://web_api";
+
+  static const String LOGIN = "LOGIN";
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/view/banner_page.dart';
-import 'package:flutter_project/view/body_page.dart';
-import 'package:flutter_project/view/footer_page.dart';
-import 'package:flutter_project/view/header_page.dart';
+import 'package:flutter_project/presenter/home/home_presenter.dart';
+import 'package:flutter_project/view/home/banner_page.dart';
+import 'package:flutter_project/view/home/body_page.dart';
+import 'package:flutter_project/view/home/footer_page.dart';
+import 'package:flutter_project/view/home/header_page.dart';
+import 'package:flutter_project/widget/dialog_widget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -13,7 +15,15 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> implements HomeContract {
+
+  HomePresenter homePresenter;
+
+  @override
+  void initState() {
+    homePresenter = new HomePresenter(this);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     var itemHeight = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: CustomAppBar(height: itemHeight * 0.05, width: itemWidth * 0.08),
+      appBar: CustomAppBar(height: itemHeight * 0.05, width: itemWidth * 0.08, homePresenter: homePresenter),
         body: SingleChildScrollView(
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.08),
@@ -41,13 +51,37 @@ class _HomePageState extends State<HomePage> {
         )
     );
   }
+
+  @override
+  void goToCartDetail() {
+
+  }
+
+  @override
+  void goToWishList() {
+
+  }
+
+  @override
+  void goToLogin() {
+
+  }
+
+  @override
+  Future<void> showMessageError(String message, BuildContext buildContext) async {
+    await showDialog(
+      context: buildContext,
+      builder: (_) => ShowLoginDialog(title: "Login....", msg: message),
+    );
+  }
 }
 
 class CustomAppBar extends PreferredSize {
   final double height;
   final double width;
+  final HomePresenter homePresenter;
 
-  CustomAppBar({this.height, this.width});
+  CustomAppBar({this.height, this.width, this.homePresenter});
 
   @override
   Size get preferredSize => Size.fromHeight(height);
@@ -57,7 +91,7 @@ class CustomAppBar extends PreferredSize {
     return Container(
       height: preferredSize.height,
       margin: EdgeInsets.symmetric(horizontal: width),
-      child: HeaderPage(),
+      child: HeaderPage(homePresenter: homePresenter),
     );
   }
 }
