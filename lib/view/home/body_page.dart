@@ -102,13 +102,13 @@ class ContainBodyRight extends StatefulWidget {
 
 class _ContainBodyRightState extends State<ContainBodyRight> implements BodyContract {
 
-  List<int> itemList = [1, 2, 3, 4 ,5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   BodyPresenter bodyPresenter;
+  Future<List<BodyRight>> postItem;
 
   @override
   void initState() {
     bodyPresenter = new BodyPresenter(this);
-    bodyPresenter.getListData();
+    postItem = bodyPresenter.getListData();
     super.initState();
   }
 
@@ -207,13 +207,29 @@ class _ContainBodyRightState extends State<ContainBodyRight> implements BodyCont
           ),
           SizedBox(height: 20,),
           Expanded(
-            child: GridView.count(
-            crossAxisCount: 4,
-            crossAxisSpacing: widget.height * 0.05,
-            mainAxisSpacing: widget.width * 0.02,
-            childAspectRatio: 9 / 12,
-            children: itemList.map((int) => ItemBodyRight()).toList(),
-           )
+            child: FutureBuilder<List<BodyRight>>(
+              future: postItem,
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                  case ConnectionState.none:
+                    return Center(child: CircularProgressIndicator());
+                  default:
+                    if (snapshot.hasError) {
+                      return Text('No data found');
+                    } else {
+                      if (!snapshot.hasData) return Container();
+                      return GridView.count(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: widget.height * 0.05,
+                        mainAxisSpacing: widget.width * 0.02,
+                        childAspectRatio: 9 / 12,
+                        children: snapshot.data.map((int) => ItemBodyRight(item: int)).toList(),
+                      );
+                    }
+                }
+              },
+            )
           )
         ],
       ),

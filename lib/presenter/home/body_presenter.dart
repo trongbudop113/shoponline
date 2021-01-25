@@ -14,20 +14,21 @@ class BodyPresenter {
 
   BodyPresenter(this._view);
 
-  getListData(){
+  Future<List<BodyRight>> getListData() async{
+    List<BodyRight> listBody = new List();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection("all_product");
     var document = ref.doc('products').collection('coats');
     document.onSnapshot.listen((querySnapshot) {
       querySnapshot.docChanges().forEach((change) {
         if (change.type == "added") {
-          var a = change.doc.ref.onSnapshot.toList();
-          a.then((value) {
-
-          });
+          Map<String, dynamic> a = change.doc.data();
+          var item = BodyRight.fromJson(a);
+          listBody.add(item);
         }
       });
     });
+    return listBody;
   }
 
   goToDetail(BodyRight bodyRight) {
