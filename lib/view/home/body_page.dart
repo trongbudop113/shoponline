@@ -5,6 +5,7 @@ import 'package:flutter_project/item_view/item_menu_left.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
 import 'package:flutter_project/presenter/home/body_presenter.dart';
+import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class BodyPage extends StatefulWidget {
@@ -15,16 +16,18 @@ class BodyPage extends StatefulWidget {
   _BodyPageState createState() => _BodyPageState();
 }
 
-class _BodyPageState extends State<BodyPage> {
+class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
 
   var itemPos = 0;
   List<MenuLeft> menuLeft;
+  MenuLeftPresenter menuLeftPresenter;
+  Future<List<MenuLeft>> postItem;
 
   @override
   void initState() {
+    menuLeftPresenter = new MenuLeftPresenter(this);
+    postItem = menuLeftPresenter.getListData();
     super.initState();
-    menuLeft = MenuLeft().getListData();
-    menuLeft[itemPos].isSelected = true;
   }
 
   void changeButtonState(int index, MenuLeft data) {
@@ -60,24 +63,48 @@ class _BodyPageState extends State<BodyPage> {
         children: [
           Container(
             width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.13,
-            child: ListView.builder(
-              itemCount: menuLeft.length,
-              itemBuilder: (context, i) {
-                return menuLeft[i].isSelected ? InkWell(
-                  hoverColor: Colors.white,
-                  onTap: (){
-                    changeButtonState(i, menuLeft[i]);
-                  },
-                  child: ItemMenuLeftFocus(menu: menuLeft[i], isFirst: i == 0 ? true : false),
-                ) : InkWell(
-                  hoverColor: Colors.white,
-                  onTap: (){
-                    changeButtonState(i, menuLeft[i]);
-                  },
-                  child: ItemMenuLeft(menu: menuLeft[i], isFirst: i == 0 ? true : false),
-                );
-              },
-            ),
+            child: FutureBuilder<List<MenuLeft>>(
+                future: postItem,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                    case ConnectionState.none:
+                      return Center(child: CircularProgressIndicator());
+                    default:
+                      if (snapshot.hasError) {
+                        return Text('No data found');
+                      } else {
+                        if (!snapshot.hasData) {
+                          return Container();
+                        }else{
+                          menuLeft = new List();
+                          menuLeft.add(MenuLeft('home', false));
+                          menuLeft.addAll(snapshot.data);
+                          menuLeft[itemPos].isSelected = true;
+                        }
+                        menuLeft[itemPos].isSelected = true;
+                        return ListView.builder(
+                          itemCount: menuLeft.length,
+                          itemBuilder: (context, i) {
+                            return menuLeft[i].isSelected ? InkWell(
+                              hoverColor: Colors.white,
+                              onTap: (){
+                                changeButtonState(i, menuLeft[i]);
+                              },
+                              child: ItemMenuLeftFocus(menu: menuLeft[i], isFirst: i == 0 ? true : false),
+                            ) : InkWell(
+                              hoverColor: Colors.white,
+                              onTap: (){
+                                changeButtonState(i, menuLeft[i]);
+                              },
+                              child: ItemMenuLeft(menu: menuLeft[i], isFirst: i == 0 ? true : false),
+                            );
+                          },
+                        );
+                      }
+                  }
+                },
+              )
           ),
           Container(
             height: itemHeight * 0.8,
@@ -88,6 +115,16 @@ class _BodyPageState extends State<BodyPage> {
         ],
       ),
     );
+  }
+
+  @override
+  void goToDetail(MenuLeft menuLeft) {
+
+  }
+
+  @override
+  void showMessageError(String message, BuildContext buildContext) {
+
   }
 }
 
