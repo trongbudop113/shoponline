@@ -15,6 +15,23 @@ class MenuLeftPresenter {
 
   MenuLeftPresenter(this._view);
 
+  Future<List<BodyRight>> getListBody(String doc) async{
+    List<BodyRight> listBody = new List();
+    fs.Firestore store = firestore();
+    fs.CollectionReference ref = store.collection("all_product");
+    var document = ref.doc('products').collection(doc);
+    document.onSnapshot.listen((querySnapshot) {
+      querySnapshot.docChanges().forEach((change) {
+        if (change.type == "added") {
+          Map<String, dynamic> a = change.doc.data();
+          var item = BodyRight.fromJson(a);
+          listBody.add(item);
+        }
+      });
+    });
+    return listBody;
+  }
+
   Future<List<MenuLeft>> getListData() async{
     List<MenuLeft> listBody = new List();
     fs.Firestore store = firestore();

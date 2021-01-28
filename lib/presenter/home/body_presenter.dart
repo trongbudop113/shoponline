@@ -14,11 +14,11 @@ class BodyPresenter {
 
   BodyPresenter(this._view);
 
-  Future<List<BodyRight>> getListData() async{
+  Future<List<BodyRight>> getListData(String doc) async{
     List<BodyRight> listBody = new List();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection("all_product");
-    var document = ref.doc('products').collection('coats');
+    var document = ref.doc('products').collection(doc);
     document.onSnapshot.listen((querySnapshot) {
       querySnapshot.docChanges().forEach((change) {
         if (change.type == "added") {

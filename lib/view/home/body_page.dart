@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/item_view/item_body_right.dart';
 import 'package:flutter_project/item_view/item_menu_left.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
-import 'package:flutter_project/presenter/home/body_presenter.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
-import 'package:flutter_project/widget/text_widget.dart';
+import 'package:flutter_project/view/home/body_right_home.dart';
 
 class BodyPage extends StatefulWidget {
   BodyPage({Key key, this.title}) : super(key: key);
@@ -22,6 +20,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   List<MenuLeft> menuLeft;
   MenuLeftPresenter menuLeftPresenter;
   Future<List<MenuLeft>> postItem;
+  Future<List<BodyRight>> postRequest;
 
   @override
   void initState() {
@@ -46,6 +45,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
         } else {
           ItemMenuLeftFocus(menu: data, isFirst: index == 0 ? true : false);
         }
+        postRequest = menuLeftPresenter.getListBody(menuLeft[itemPos].category_name);
       }
     });
   }
@@ -110,7 +110,8 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
             height: itemHeight * 0.8,
             width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.87,
             padding: EdgeInsets.only(left: itemWidth * 0.02),
-            child: ContainBodyRight(width: itemWidth, height: itemHeight,),
+            child: itemPos == 0 ? ContainBodyHome() :
+            ContainBodyRight(width: itemWidth, height: itemHeight, postItem: postRequest),
           )
         ],
       ),
@@ -119,162 +120,6 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
 
   @override
   void goToDetail(MenuLeft menuLeft) {
-
-  }
-
-  @override
-  void showMessageError(String message, BuildContext buildContext) {
-
-  }
-}
-
-class ContainBodyRight extends StatefulWidget {
-  ContainBodyRight({Key key, this.title, this.width, this.height}) : super(key: key);
-  final String title;
-  final double width, height;
-
-  @override
-  _ContainBodyRightState createState() => _ContainBodyRightState();
-}
-
-class _ContainBodyRightState extends State<ContainBodyRight> implements BodyContract {
-
-  BodyPresenter bodyPresenter;
-  Future<List<BodyRight>> postItem;
-
-  @override
-  void initState() {
-    bodyPresenter = new BodyPresenter(this);
-    postItem = bodyPresenter.getListData();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: textView('COATS', Colors.black, 35, FontWeight.bold),
-          ),
-          SizedBox(height: 15,),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: textView('View more', Colors.black, 12, FontWeight.bold),
-          ),
-          SizedBox(height: 20,),
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color: Colors.white,
-                    border: Border.all()
-                ),
-                child: Container(
-                  width: 100,
-                  height: 40,
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [
-                      Icon(Icons.sort),
-                      textView('Sort', Colors.black, 12, FontWeight.normal)
-                    ],
-                  ),
-                )
-              ),
-              SizedBox(width: 20,),
-              Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Colors.white,
-                      border: Border.all()
-                  ),
-                  child: Container(
-                      width: 100,
-                      height: 40,
-                      alignment: Alignment.center,
-                      child: textView('Product Type', Colors.black, 12, FontWeight.normal)
-                  )
-              ),
-              SizedBox(width: 20,),
-              Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Colors.white,
-                      border: Border.all()
-                  ),
-                  child: Container(
-                      width: 100,
-                      height: 40,
-                      alignment: Alignment.center,
-                      child: textView('Style', Colors.black, 12, FontWeight.normal)
-                  )
-              ),
-              SizedBox(width: 20,),
-              Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Colors.white,
-                      border: Border.all()
-                  ),
-                  child: Container(
-                      width: 100,
-                      height: 40,
-                      alignment: Alignment.center,
-                      child: textView('Size', Colors.black, 12, FontWeight.normal)
-                  )
-              ),
-              SizedBox(width: 20,),
-              Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Colors.white,
-                      border: Border.all()
-                  ),
-                  child: Container(
-                      width: 100,
-                      height: 40,
-                      alignment: Alignment.center,
-                      child: textView('Colors', Colors.black, 12, FontWeight.normal)
-                  )
-              )
-            ],
-          ),
-          SizedBox(height: 20,),
-          Expanded(
-            child: FutureBuilder<List<BodyRight>>(
-              future: postItem,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                  case ConnectionState.none:
-                    return Center(child: CircularProgressIndicator());
-                  default:
-                    if (snapshot.hasError) {
-                      return Text('No data found');
-                    } else {
-                      if (!snapshot.hasData) return Container();
-                      return GridView.count(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: widget.height * 0.05,
-                        mainAxisSpacing: widget.width * 0.02,
-                        childAspectRatio: 9 / 12,
-                        children: snapshot.data.map((int) => ItemBodyRight(item: int)).toList(),
-                      );
-                    }
-                }
-              },
-            )
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
-  void goToDetail(BodyRight bodyRight) {
 
   }
 
