@@ -5,6 +5,7 @@ import 'package:flutter_project/view/home/banner_page.dart';
 import 'package:flutter_project/view/home/body_page.dart';
 import 'package:flutter_project/view/home/footer_page.dart';
 import 'package:flutter_project/view/home/header_page.dart';
+import 'package:flutter_project/view/login_page.dart';
 import 'package:flutter_project/widget/dialog_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -64,7 +65,9 @@ class _HomePageState extends State<HomePage> implements HomeContract {
 
   @override
   void goToLogin() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => LoginPage()
+    ));
   }
 
   @override

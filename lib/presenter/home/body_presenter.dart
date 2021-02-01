@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:firebase/firebase.dart';
 import 'package:firebase/firestore.dart' as fs;
@@ -17,8 +18,8 @@ class BodyPresenter {
   Future<List<BodyRight>> getListData(String doc) async{
     List<BodyRight> listBody = new List();
     fs.Firestore store = firestore();
-    fs.CollectionReference ref = store.collection("all_product");
-    var document = ref.doc('products').collection(doc);
+    fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_PRODUCT);
+    var document = ref.doc(DatabaseCollection.PRODUCTS).collection(doc);
     document.onSnapshot.listen((querySnapshot) {
       querySnapshot.docChanges().forEach((change) {
         if (change.type == "added") {

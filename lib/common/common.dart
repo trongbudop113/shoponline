@@ -1,6 +1,7 @@
 class Common {
   //screen
   static const String REGISTER_SCREEN = "/register";
+  static const String LOGIN_SCREEN = "/login";
 
   //STATIC WEB URL
   static const String BASE_URL = "https://web_api";
