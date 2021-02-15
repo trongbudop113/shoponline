@@ -1,15 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login_web/flutter_facebook_login_web.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LoginContract {
-  void loginSuccess(String userId);
+  void loginSuccess(String userId, String type);
   void backToHome();
-  void goToRegister();
+  void goToRegister(String userId, String type);
+  void onRegisterSuccess();
   void showMessageError(String message, BuildContext buildContext);
 }
 
@@ -26,7 +28,7 @@ class LoginPresenter {
 
     await signInWithGoogle().then((value) {
         if(value != null){
-          onLoginSuccess(value);
+          onLoginSuccess(value, 'google');
         }else{
           showMessageError('Error : user null', mContext);
         }
@@ -37,7 +39,7 @@ class LoginPresenter {
 
     await loginWithFacebook().then((value) {
       if(value != null){
-        onLoginSuccess(value);
+        onLoginSuccess(value, 'facebook');
       }else{
         showMessageError('Error : user null', mContext);
       }
@@ -48,8 +50,8 @@ class LoginPresenter {
     _view.showMessageError(message, buildContext);
   }
 
-  onLoginSuccess(String userId){
-    _view.loginSuccess(userId);
+  onLoginSuccess(String userId, String type){
+    _view.loginSuccess(userId, type);
   }
 
   handleSignOut() async{
@@ -59,7 +61,11 @@ class LoginPresenter {
   }
 
   Future<String> signOut() async {
-    await _firebaseAuth.signOut();
+    if (_firebaseAuth.currentUser != null){
+      await _firebaseAuth.signOut();
+    }else{
+      await facebookSignIn.logOut();
+    }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(Common.LOGIN, false);
     return 'User signed out';
@@ -102,5 +108,42 @@ class LoginPresenter {
     }else{
       return null;
     }
+  }
+
+  Future<void> registerWithEmailPassword(String email, String password, BuildContext mContext) async {
+    // Initialize Firebase
+    await Firebase.initializeApp();
+
+    try{
+      final UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final User user = userCredential.user;
+      print(user.uid);
+
+      if (user != null) {
+        assert(user.uid != null);
+        assert(user.email != null);
+
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
+
+        onLoginSuccess(user.uid, 'email');
+      }
+    }catch(_){
+      if(_ is PlatformException) {
+        if(_.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+          showMessageError('$email has already been registered', mContext);
+        }else{
+          showMessageError(_.message, mContext);
+        }
+      }else{
+        showMessageError(_.toString(), mContext);
+      }
+    }
+
+    return null;
   }
 }

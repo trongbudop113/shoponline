@@ -6,6 +6,7 @@ abstract class HomeContract {
   void goToCartDetail();
   void goToLogin();
   void goToWishList();
+  void goToPerson();
   void showMessageError(String message, BuildContext buildContext);
 }
 
@@ -20,6 +21,16 @@ class HomePresenter {
     bool intValue = prefs.getBool(Common.LOGIN) ?? false;
     if(intValue){
       _view.goToCartDetail();
+    }else{
+      _view.goToLogin();
+    }
+  }
+
+  goToPersonInformation(BuildContext mContext) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool intValue = prefs.getBool(Common.LOGIN) ?? false;
+    if(intValue){
+      _view.goToPerson();
     }else{
       _view.goToLogin();
     }

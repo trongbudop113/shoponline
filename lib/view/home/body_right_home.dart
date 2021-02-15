@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/item_view/item_body_right.dart';
 import 'package:flutter_project/model/body_right.dart';
+import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 import 'filter/item_filter.dart';
@@ -28,9 +29,10 @@ class _ContainBodyHomeState extends State<ContainBodyHome>{
 
 
 class ContainBodyRight extends StatefulWidget {
-  ContainBodyRight({Key key, this.postItem, this.width, this.height}) : super(key: key);
+  ContainBodyRight({Key key, this.postItem, this.width, this.height, this.menuLeftPresenter}) : super(key: key);
   Future<List<BodyRight>> postItem;
   final double width, height;
+  final MenuLeftPresenter menuLeftPresenter;
 
   @override
   _ContainBodyRightState createState() => _ContainBodyRightState();
@@ -85,7 +87,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
                           crossAxisSpacing: widget.height * 0.05,
                           mainAxisSpacing: widget.width * 0.02,
                           childAspectRatio: 9 / 12,
-                          children: snapshot.data.map((int) => ItemBodyRight(item: int)).toList(),
+                          children: snapshot.data.map((int) => ItemBodyRight(item: int, menuLeftPresenter: widget.menuLeftPresenter,)).toList(),
                         );
                       }
                   }

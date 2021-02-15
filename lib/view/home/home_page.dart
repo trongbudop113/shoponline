@@ -77,6 +77,11 @@ class _HomePageState extends State<HomePage> implements HomeContract {
       builder: (_) => ShowLoginDialog(title: "Login....", msg: message),
     );
   }
+
+  @override
+  void goToPerson() {
+
+  }
 }
 
 class CustomAppBar extends PreferredSize {

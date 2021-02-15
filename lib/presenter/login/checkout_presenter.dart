@@ -3,6 +3,7 @@ import 'package:firebase/firestore.dart' as fs;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
+import 'package:flutter_project/model/user.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +13,7 @@ class CheckoutPresenter {
 
   CheckoutPresenter(this._view);
 
-  Future<void> checkLogin(String userId, BuildContext mContext) async{
+  Future<void> checkLogin(String userId, String type, BuildContext mContext) async{
 
     try{
       fs.Firestore store = firestore();
@@ -22,9 +23,20 @@ class CheckoutPresenter {
         if(value.exists){
           backToHome();
         }else{
-          goToRegister();
+          goToRegister(userId, type);
         }
       });
+    }catch(e){
+      showMessageError(e.toString(), mContext);
+    }
+  }
+
+  setUserData(UserData userData, BuildContext mContext){
+    try{
+      fs.Firestore store = firestore();
+      fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_USER);
+      var document = ref.doc(userData.id);
+      document.set(userData.toJson()).whenComplete(() => backToHome());
     }catch(e){
       showMessageError(e.toString(), mContext);
     }
@@ -36,8 +48,8 @@ class CheckoutPresenter {
     _view.backToHome();
   }
 
-  goToRegister(){
-    _view.goToRegister();
+  goToRegister(String userId, String type){
+    _view.goToRegister(userId, type);
   }
 
   showMessageError(String message, BuildContext buildContext){

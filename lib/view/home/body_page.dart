@@ -111,7 +111,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
             width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.87,
             padding: EdgeInsets.only(left: itemWidth * 0.02),
             child: itemPos == 0 ? ContainBodyHome() :
-            ContainBodyRight(width: itemWidth, height: itemHeight, postItem: postRequest),
+            ContainBodyRight(width: itemWidth, height: itemHeight, postItem: postRequest, menuLeftPresenter: menuLeftPresenter),
           )
         ],
       ),

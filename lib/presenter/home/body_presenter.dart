@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:firebase/firebase.dart';
 import 'package:firebase/firestore.dart' as fs;
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class BodyContract {
   void goToDetail(BodyRight bodyRight);

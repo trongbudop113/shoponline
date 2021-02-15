@@ -2,11 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/model/body_right.dart';
+import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class ItemBodyRight extends StatefulWidget {
-  ItemBodyRight({Key key, this.item}) : super(key: key);
+  ItemBodyRight({Key key, this.item, this.menuLeftPresenter}) : super(key: key);
   final BodyRight item;
+  final MenuLeftPresenter menuLeftPresenter;
 
   @override
   _ItemBodyRightState createState() => _ItemBodyRightState();
@@ -77,7 +80,16 @@ class _ItemBodyRightState extends State<ItemBodyRight> {
                       textView(_itemCount.toString(), Colors.purple[200], 18, FontWeight.bold),
                       IconButton(icon: new Icon(Icons.add_circle_outline_rounded),onPressed: ()=>setState(()=>_itemCount >= 0 ? _itemCount ++ : 0)),
                       Spacer(flex: 1),
-                      IconButton(icon: new Icon(Icons.add_shopping_cart, size: itemWidth* 0.015),onPressed: ()=>setState((){}))
+                      IconButton(icon: new Icon(Icons.add_shopping_cart, size: itemWidth* 0.015),onPressed: (){
+                        CartItem cart = new CartItem();
+                        cart.quantity = 3;
+                        cart.id = widget.item.id;
+                        cart.name = widget.item.name;
+                        cart.image = widget.item.image;
+                        cart.discount = widget.item.discount;
+                        cart.price = widget.item.price;
+                        widget.menuLeftPresenter.addToCart(cart);
+                      })
                     ],
                   ),
                 ),

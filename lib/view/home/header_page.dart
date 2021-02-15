@@ -116,6 +116,19 @@ class _HeaderPageState extends State<HeaderPage> {
           SizedBox(width: 20,),
           InkWell(
             onTap: (){
+              widget.homePresenter.goToPersonInformation(context);
+            },
+            focusColor: Colors.grey,
+            hoverColor: Colors.grey,
+            child: Container(
+              width: 50,
+              height: 50,
+              child: Icon(Icons.person, size: 30,),
+            ),
+          ),
+          SizedBox(width: 20,),
+          InkWell(
+            onTap: (){
               widget.homePresenter.goToCartDetail(context);
             },
             focusColor: Colors.grey,
