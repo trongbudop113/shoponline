@@ -146,4 +146,41 @@ class LoginPresenter {
 
     return null;
   }
+
+  Future<void> loginWithEmailAndPassword(String email, String password, BuildContext mContext) async {
+    // Initialize Firebase
+    await Firebase.initializeApp();
+
+    try{
+      final UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final User user = userCredential.user;
+      print(user.uid);
+
+      if (user != null) {
+        assert(user.uid != null);
+        assert(user.email != null);
+
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
+
+        onLoginSuccess(user.uid, 'email');
+      }
+    }catch(_){
+      if(_ is PlatformException) {
+        if(_.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+          showMessageError('$email has already been registered', mContext);
+        }else{
+          showMessageError(_.message, mContext);
+        }
+      }else{
+        showMessageError(_.toString(), mContext);
+      }
+    }
+
+    return null;
+  }
 }

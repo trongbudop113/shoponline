@@ -3,8 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/model/menu_left.dart';
+import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
+import 'package:flutter_project/values/string_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:toast/toast.dart';
 
 class ItemBodyRight extends StatefulWidget {
   ItemBodyRight({Key key, this.item, this.menuLeftPresenter}) : super(key: key);
@@ -15,9 +19,27 @@ class ItemBodyRight extends StatefulWidget {
   _ItemBodyRightState createState() => _ItemBodyRightState();
 }
 
-class _ItemBodyRightState extends State<ItemBodyRight> {
+class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  {
 
   int _itemCount = 0;
+  CartPresenter cartPresenter;
+
+  @override
+  void initState() {
+    cartPresenter = new CartPresenter(this);
+    super.initState();
+  }
+
+  void onClickAddToCart(BodyRight item) {
+    CartItem cart = new CartItem();
+    cart.quantity = _itemCount;
+    cart.id = item.id;
+    cart.name = item.name;
+    cart.image = item.image;
+    cart.discount = item.discount;
+    cart.price = item.price;
+    widget.menuLeftPresenter.checkLoginToAddToCart(cart, cartPresenter);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,16 +102,20 @@ class _ItemBodyRightState extends State<ItemBodyRight> {
                       textView(_itemCount.toString(), Colors.purple[200], 18, FontWeight.bold),
                       IconButton(icon: new Icon(Icons.add_circle_outline_rounded),onPressed: ()=>setState(()=>_itemCount >= 0 ? _itemCount ++ : 0)),
                       Spacer(flex: 1),
-                      IconButton(icon: new Icon(Icons.add_shopping_cart, size: itemWidth* 0.015),onPressed: (){
-                        CartItem cart = new CartItem();
-                        cart.quantity = 3;
-                        cart.id = widget.item.id;
-                        cart.name = widget.item.name;
-                        cart.image = widget.item.image;
-                        cart.discount = widget.item.discount;
-                        cart.price = widget.item.price;
-                        widget.menuLeftPresenter.addToCart(cart);
-                      })
+                      InkWell(
+                        onTap: (){
+                          _itemCount == 0 ?
+                          widget.menuLeftPresenter.showToastMessage(PageName.CHOOSE_ITEM) :
+                          onClickAddToCart(widget.item);
+                        },
+                        focusColor: Colors.grey,
+                        hoverColor: Colors.grey,
+                        child: Container(
+                          width: itemWidth* 0.015,
+                          height: itemWidth* 0.015,
+                          child: Icon(Icons.add_shopping_cart),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -101,5 +127,14 @@ class _ItemBodyRightState extends State<ItemBodyRight> {
         errorWidget: (context, url, error) => Icon(Icons.error),
       )
     );
+  }
+
+  @override
+  void onAddToCartSuccess(CartItem bodyRight) {
+    setState(() {
+      _itemCount = 0;
+    });
+    final snackBar = SnackBar(content: Text(bodyRight.name + ' added To Cart'), duration: Duration(seconds: 1));
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 }

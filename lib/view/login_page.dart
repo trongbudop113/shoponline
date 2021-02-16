@@ -322,7 +322,7 @@ class _LoginPageState extends State<LoginPage> implements LoginContract {
                           child: Text('Login', textAlign: TextAlign.center,),
                         ),
                         onTap: (){
-                          loginPresenter.registerWithEmailPassword(emailTextController.value.text, passwordTextController.value.text, context);
+                          loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
                         },
                       ),
                       SizedBox(height: 20,),

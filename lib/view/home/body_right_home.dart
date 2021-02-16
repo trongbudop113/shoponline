@@ -29,7 +29,8 @@ class _ContainBodyHomeState extends State<ContainBodyHome>{
 
 
 class ContainBodyRight extends StatefulWidget {
-  ContainBodyRight({Key key, this.postItem, this.width, this.height, this.menuLeftPresenter}) : super(key: key);
+  ContainBodyRight({Key key, this.postItem, this.width, this.height, this.menuLeftPresenter, this.title}) : super(key: key);
+  final String title;
   Future<List<BodyRight>> postItem;
   final double width, height;
   final MenuLeftPresenter menuLeftPresenter;
@@ -49,7 +50,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            child: textView('COATS', Colors.black, 35, FontWeight.bold),
+            child: textView(widget.title, Colors.black, 35, FontWeight.bold),
           ),
           SizedBox(height: 15,),
           Container(

@@ -5,6 +5,7 @@ import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/view/home/body_right_home.dart';
+import 'package:toast/toast.dart';
 
 class BodyPage extends StatefulWidget {
   BodyPage({Key key, this.title}) : super(key: key);
@@ -111,7 +112,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
             width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.87,
             padding: EdgeInsets.only(left: itemWidth * 0.02),
             child: itemPos == 0 ? ContainBodyHome() :
-            ContainBodyRight(width: itemWidth, height: itemHeight, postItem: postRequest, menuLeftPresenter: menuLeftPresenter),
+            ContainBodyRight(width: itemWidth, height: itemHeight, postItem: postRequest, menuLeftPresenter: menuLeftPresenter, title: menuLeft[itemPos].category_name.toUpperCase()),
           )
         ],
       ),
@@ -126,5 +127,10 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   @override
   void showMessageError(String message, BuildContext buildContext) {
 
+  }
+
+  @override
+  void showToastMessage(String message) {
+    Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
   }
 }

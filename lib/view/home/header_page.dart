@@ -136,7 +136,19 @@ class _HeaderPageState extends State<HeaderPage> {
             child: Container(
               width: 50,
               height: 50,
-              child: Icon(Icons.shopping_cart, size: 30,),
+              child: Stack(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    child: Icon(Icons.shopping_cart, size: 30,),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Text('0'),
+                  )
+                ],
+              )
             ),
           )
         ],
