@@ -63,7 +63,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
             child:  ListView.builder(
               itemCount: listSort.length,
               scrollDirection: Axis.horizontal,
-              physics: NeverScrollableScrollPhysics(),
+              physics: BouncingScrollPhysics(),
               itemBuilder: (context, i) {
                 return i == 0 ? ItemSortProduct(name: listSort[i]) : ItemFilterProduct(name: listSort[i]);
               },
@@ -84,10 +84,11 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
                       } else {
                         if (!snapshot.hasData) return Container();
                         return GridView.count(
-                          crossAxisCount: 4,
+                          crossAxisCount: !Common.isPortrait(context) ? 4 : 2,
                           crossAxisSpacing: widget.height * 0.05,
                           mainAxisSpacing: widget.width * 0.02,
                           childAspectRatio: 9 / 12,
+                          physics: NeverScrollableScrollPhysics(),
                           children: snapshot.data.map((int) => ItemBodyRight(item: int, menuLeftPresenter: widget.menuLeftPresenter,)).toList(),
                         );
                       }

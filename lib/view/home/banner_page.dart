@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/values/color_page.dart';
 
 class BannerPage extends StatefulWidget {
   BannerPage({Key key, this.title}) : super(key: key);
@@ -14,16 +16,14 @@ class _BannerPageState extends State<BannerPage> {
   @override
   Widget build(BuildContext context) {
 
-    var itemWidth = MediaQuery.of(context).size.width;
-    var itemHeight = MediaQuery.of(context).size.height;
+    var itemWidth = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
+    var itemHeight = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
 
     return Container(
-      height: itemHeight * 0.35,
+      margin: EdgeInsets.all(itemWidth * 0.02),
+      color: BLACK,
+      height: itemHeight * 0.5,
       width: itemWidth,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-          color: Colors.pink[100]
-      ),
     );
   }
 }

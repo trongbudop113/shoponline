@@ -1,7 +1,12 @@
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
+import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HeaderPage extends StatefulWidget {
   HeaderPage({Key key, this.title, this.homePresenter}) : super(key: key);
@@ -14,141 +19,80 @@ class HeaderPage extends StatefulWidget {
 
 class _HeaderPageState extends State<HeaderPage> {
 
-  bool _isCancelIconEmail = false;
-  final _searchController = TextEditingController();
-  FocusScopeNode currentFocus;
+  var _firebaseAuth = FirebaseAuth.instance;
 
-  void filterSearchResults(String query) {
+  void checkLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var isLogin = prefs.getBool(Common.LOGIN) ?? false;
+    if (isLogin && _firebaseAuth.currentUser != null){
 
-  }
-
-  void clearFocusText(){
-    currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus) {
-      currentFocus.unfocus();
     }
   }
 
   @override
   Widget build(BuildContext context) {
 
-    var itemWidth = MediaQuery.of(context).size.width;
-    var itemHeight = MediaQuery.of(context).size.height;
+    var itemWidth = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
+    var itemHeight = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
+    var sizeTextCustom = (itemHeight * 0.05) > 30 ? 30 : (itemHeight * 0.05);
 
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: itemWidth * 0.02),
+      color: BLACK,
       child: Row(
         children: [
+          Container(
+            child: textView('WEARISM', WHITE, sizeTextCustom, FontWeight.bold),
+          ),
+          Spacer(flex: 1,),
           InkWell(
-            child: textView('WEARISM', Colors.black, 35, FontWeight.bold),
             onTap: (){
 
             },
+            focusColor: Colors.white,
+            hoverColor: Colors.white,
+            child: Container(
+              width: 50,
+              height: 50,
+              child: Icon(Icons.favorite, size: 30, color: WHITE),
+            ),
           ),
-          Spacer(flex: 1,),
-          Container(
-            margin: EdgeInsets.all(20),
-            padding: EdgeInsets.only(left: 15, right: 10),
-            decoration: new BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: new BorderRadius.all(Radius.circular(15)
+          SizedBox(width: 20,),
+          InkWell(
+            onTap: (){
+
+            },
+            focusColor: Colors.grey,
+            hoverColor: Colors.grey,
+            child: Container(
+              width: 50,
+              height: 50,
+              child: Icon(Icons.person, size: 30, color: WHITE),
+            ),
+          ),
+          SizedBox(width: 20,),
+          InkWell(
+            onTap: (){
+
+            },
+            focusColor: Colors.grey,
+            hoverColor: Colors.grey,
+            child: Container(
+                width: 50,
+                height: 50,
+                child: Stack(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Icon(Icons.shopping_cart, size: 30, color: WHITE),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Text('0'),
+                    )
+                  ],
                 )
-            ),
-            width: itemWidth * 0.4,
-            child: FocusScope(
-              onFocusChange: (value) {
-                if (value) {
-                  setState(() {});
-                } else {
-                  setState(() {
-                    _isCancelIconEmail = false;
-                  });
-                }
-              },
-              child: TextField(
-                onChanged: (text) {
-                  setState(() {
-                    _isCancelIconEmail = true;
-                    filterSearchResults(text);
-                  });
-                },
-                onTap: (){
-                  setState(() {
-                    filterSearchResults("");
-                    _isCancelIconEmail = true;
-                  });
-                },
-                textAlignVertical: TextAlignVertical.center,
-                textAlign: TextAlign.left,
-                maxLines: 1,
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search for items, brands and inspiration',
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
-                  icon: Icon(Icons.search),
-                  border: InputBorder.none,
-                  suffixIcon: !_isCancelIconEmail ? null : InkWell(
-                    onTap: () {
-                      _searchController.clear();
-                      clearFocusText();
-                      setState(() {
-                        _isCancelIconEmail = false;
-                      });
-                    },
-                    child: Icon(Icons.cancel),
-                  ),
-                ),
-              ),
-            )
-          ),
-          Spacer(flex: 1,),
-          InkWell(
-            onTap: (){
-              widget.homePresenter.goToWishList(context);
-            },
-            focusColor: Colors.grey,
-            hoverColor: Colors.grey,
-            child: Container(
-              width: 50,
-              height: 50,
-              child: Icon(Icons.favorite_border, size: 30,),
-            ),
-          ),
-          SizedBox(width: 20,),
-          InkWell(
-            onTap: (){
-              widget.homePresenter.goToPersonInformation(context);
-            },
-            focusColor: Colors.grey,
-            hoverColor: Colors.grey,
-            child: Container(
-              width: 50,
-              height: 50,
-              child: Icon(Icons.person, size: 30,),
-            ),
-          ),
-          SizedBox(width: 20,),
-          InkWell(
-            onTap: (){
-              widget.homePresenter.goToCartDetail(context);
-            },
-            focusColor: Colors.grey,
-            hoverColor: Colors.grey,
-            child: Container(
-              width: 50,
-              height: 50,
-              child: Stack(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    child: Icon(Icons.shopping_cart, size: 30,),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Text('0'),
-                  )
-                ],
-              )
             ),
           )
         ],

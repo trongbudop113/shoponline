@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Widget textView(String text, Color color, double size, FontWeight fontWeight){
   return Text(
     text,
-    style: TextStyle(
+    style: GoogleFonts.bungee(
+      textStyle: TextStyle(
+        color: color
+      ),
       fontSize: size,
-      color: color,
-      fontWeight: fontWeight
+      fontWeight: fontWeight,
     ),
   );
 }

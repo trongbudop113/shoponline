@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Common {
   //screen
   static const String REGISTER_SCREEN = "/register";
@@ -11,5 +13,14 @@ class Common {
   static List<String> getListSort(){
     var listSort = ['Sort', 'Product Type', 'Style', 'Size', 'Colors'];
     return listSort;
+  }
+
+  static bool isPortrait(BuildContext context){
+    Orientation orientation = MediaQuery.of(context).orientation;
+    if(orientation == Orientation.portrait){
+      return true;
+    }else{
+      return false;
+    }
   }
 }

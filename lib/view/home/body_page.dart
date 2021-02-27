@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/item_view/item_menu_left.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
@@ -35,16 +36,16 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
       if (itemPos != index) {
         menuLeft[itemPos].isSelected = !menuLeft[itemPos].isSelected;
         if (menuLeft[itemPos].isSelected) {
-          ItemMenuLeft(menu: data, isFirst: index == 0 ? true : false);
+          ItemMenuLeft(menu: data);
         } else {
-          ItemMenuLeftFocus(menu: data, isFirst: index == 0 ? true : false);
+          ItemMenuLeftFocus(menu: data);
         }
         itemPos = index;
         menuLeft[index].isSelected = !menuLeft[index].isSelected;
         if (menuLeft[index].isSelected) {
-          ItemMenuLeft(menu: data, isFirst: index == 0 ? true : false);
+          ItemMenuLeft(menu: data);
         } else {
-          ItemMenuLeftFocus(menu: data, isFirst: index == 0 ? true : false);
+          ItemMenuLeftFocus(menu: data);
         }
         postRequest = menuLeftPresenter.getListBody(menuLeft[itemPos].category_name);
       }
@@ -54,16 +55,18 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   @override
   Widget build(BuildContext context) {
 
-    var itemWidth = MediaQuery.of(context).size.width;
-    var itemHeight = MediaQuery.of(context).size.height;
+    var itemWidth = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
+    var itemWidthCus = MediaQuery.of(context).size.width;
+    var itemHeight = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
 
     return Container(
-      height: itemHeight * 0.8,
-      width: itemWidth,
+      margin: EdgeInsets.all(itemWidth * 0.02),
+      height: itemHeight * 1.25,
+      width: itemWidthCus,
       child: Row(
         children: [
           Container(
-            width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.13,
+            width: (itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.13,
             child: FutureBuilder<List<MenuLeft>>(
                 future: postItem,
                 builder: (context, snapshot) {
@@ -92,13 +95,13 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
                               onTap: (){
                                 changeButtonState(i, menuLeft[i]);
                               },
-                              child: ItemMenuLeftFocus(menu: menuLeft[i], isFirst: i == 0 ? true : false),
+                              child: ItemMenuLeftFocus(menu: menuLeft[i]),
                             ) : InkWell(
                               hoverColor: Colors.white,
                               onTap: (){
                                 changeButtonState(i, menuLeft[i]);
                               },
-                              child: ItemMenuLeft(menu: menuLeft[i], isFirst: i == 0 ? true : false),
+                              child: ItemMenuLeft(menu: menuLeft[i]),
                             );
                           },
                         );
@@ -108,11 +111,10 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
               )
           ),
           Container(
-            height: itemHeight * 0.8,
-            width: (itemWidth - (2 * (itemWidth * 0.08))) * 0.87,
-            padding: EdgeInsets.only(left: itemWidth * 0.02),
+            width: (itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.87,
+            padding: EdgeInsets.only(left: itemWidthCus * 0.02),
             child: itemPos == 0 ? ContainBodyHome() :
-            ContainBodyRight(width: itemWidth, height: itemHeight, postItem: postRequest, menuLeftPresenter: menuLeftPresenter, title: menuLeft[itemPos].category_name.toUpperCase()),
+            ContainBodyRight(width: itemWidthCus, height: itemHeight, postItem: postRequest, menuLeftPresenter: menuLeftPresenter, title: menuLeft[itemPos].category_name.toUpperCase()),
           )
         ],
       ),
@@ -132,5 +134,12 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   @override
   void showToastMessage(String message) {
     Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+  }
+
+  @override
+  void onSuccess() {
+    setState(() {
+      
+    });
   }
 }

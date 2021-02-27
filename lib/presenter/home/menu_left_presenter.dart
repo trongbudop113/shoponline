@@ -14,6 +14,7 @@ abstract class MenuLeftContract {
   void goToDetail(MenuLeft menuLeft);
   void showMessageError(String message, BuildContext buildContext);
   void showToastMessage(String message);
+  void onSuccess();
 }
 
 class MenuLeftPresenter {
@@ -27,7 +28,7 @@ class MenuLeftPresenter {
     List<BodyRight> listBody = new List();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_PRODUCT);
-    var document = ref.doc(DatabaseCollection.PRODUCTS).collection(doc);
+    var document = ref.doc(DatabaseCollection.PRODUCTS).collection(doc).limit(4);
     document.onSnapshot.listen((querySnapshot) {
       querySnapshot.docChanges().forEach((change) {
         if (change.type == "added") {
@@ -37,6 +38,7 @@ class MenuLeftPresenter {
         }
       });
     });
+    onSuccess();
     return listBody;
   }
 
@@ -47,9 +49,10 @@ class MenuLeftPresenter {
     ref.doc(DatabaseCollection.PRODUCTS).onSnapshot.forEach((element) {
       element.data().values.forEach((element) {
         listBody.add(MenuLeft(element, false));
+        print(listBody.length);
       });
     });
-
+    onSuccess();
     return listBody;
   }
 
@@ -82,6 +85,10 @@ class MenuLeftPresenter {
       }
     });
 
+  }
+
+  onSuccess(){
+    _view.onSuccess();
   }
 
   goToDetail(MenuLeft menuLeft) {

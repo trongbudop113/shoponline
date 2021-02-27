@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
+import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_project/view/cart_page.dart';
 import 'package:flutter_project/view/home/banner_page.dart';
 import 'package:flutter_project/view/home/body_page.dart';
 import 'package:flutter_project/view/home/footer_page.dart';
@@ -33,29 +35,32 @@ class _HomePageState extends State<HomePage> implements HomeContract {
     var itemHeight = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: CustomAppBar(height: itemHeight * 0.05, width: itemWidth * 0.08, homePresenter: homePresenter),
-        body: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.08),
-            child: Column(
-              children: [
-                SizedBox(height: 20,),
-                BannerPage(),
-                SizedBox(height: 30,),
-                BodyPage(),
-                SizedBox(height: 20,),
-                FooterPage(),
-                SizedBox(height: 20,)
-              ],
-            ),
+      appBar: CustomAppBar(height: itemHeight * 0.03, width: itemWidth, homePresenter: homePresenter),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: BannerPage(),
           ),
-        )
+          SliverToBoxAdapter(
+            child: BodyPage(),
+          ),
+          SliverToBoxAdapter(
+            child: FooterPage(),
+          )
+        ],
+      ),
+      bottomNavigationBar: Container(
+        color: BLACK,
+        height: 60,
+      ),
     );
   }
 
   @override
   void goToCartDetail() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CartPage()
+    ));
   }
 
   @override
@@ -64,10 +69,13 @@ class _HomePageState extends State<HomePage> implements HomeContract {
   }
 
   @override
-  void goToLogin() {
-    Navigator.push(context, MaterialPageRoute(
+  Future<void> goToLogin() async {
+    var result = await Navigator.push(context, MaterialPageRoute(
         builder: (context) => LoginPage()
     ));
+    if(result.toString() == 'reload'){
+
+    }
   }
 
   @override
@@ -92,13 +100,12 @@ class CustomAppBar extends PreferredSize {
   CustomAppBar({this.height, this.width, this.homePresenter});
 
   @override
-  Size get preferredSize => Size.fromHeight(height);
+  Size get preferredSize => Size.fromHeight(60);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: preferredSize.height,
-      margin: EdgeInsets.symmetric(horizontal: width),
       child: HeaderPage(homePresenter: homePresenter),
     );
   }

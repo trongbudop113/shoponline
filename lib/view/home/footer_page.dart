@@ -22,10 +22,6 @@ class _FooterPageState extends State<FooterPage> {
       height: itemHeight * 0.2,
       width: itemWidth,
       padding: EdgeInsets.all(30),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          color: Colors.pink[100]
-      ),
       child: Row(
         children: [
           Container(),
