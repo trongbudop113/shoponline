@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class ItemSortProduct extends StatefulWidget {
@@ -15,22 +16,17 @@ class _ItemSortProductState extends State<ItemSortProduct> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            color: Colors.white,
-            border: Border.all()
-        ),
-        child: Container(
-          width: 100,
-          height: 40,
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              Icon(Icons.sort),
-              textView(widget.name, Colors.black, 12, FontWeight.normal)
-            ],
-          ),
-        )
+      width: 100,
+      height: 40,
+      color: BLACK,
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        children: [
+          Icon(Icons.sort, color: WHITE),
+          SizedBox(width: 10,),
+          textView(widget.name, WHITE, 12, FontWeight.normal)
+        ],
+      ),
     );
   }
 }
@@ -48,17 +44,13 @@ class _ItemFilterProductState extends State<ItemFilterProduct> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            color: Colors.white,
-            border: Border.all()
-        ),
+        color: BLACK,
         margin: EdgeInsets.only(left: 20),
         child: Container(
             width: 100,
             height: 40,
             alignment: Alignment.center,
-            child: textView(widget.name, Colors.black, 12, FontWeight.normal)
+            child: textView(widget.name, WHITE, 12, FontWeight.normal)
         )
     );
   }

@@ -6,8 +6,9 @@ import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class ItemMenuLeft extends StatefulWidget {
-  ItemMenuLeft({Key key, this.menu}) : super(key: key);
+  ItemMenuLeft({Key key, this.menu, this.width}) : super(key: key);
   final MenuLeft menu;
+  final double width;
 
   @override
   _ItemMenuLeftState createState() => _ItemMenuLeftState();
@@ -24,7 +25,7 @@ class _ItemMenuLeftState extends State<ItemMenuLeft> {
       child: !Common.isPortrait(context) ?
       Row(
         children: [
-          textView(widget.menu.category_name.toUpperCase(), WHITE, 15, FontWeight.bold),
+          textView(widget.menu.category_name.toUpperCase(), WHITE, widget.width * 0.01, FontWeight.bold),
           Spacer(flex: 1,),
           Icon(Icons.home, color: WHITE,)
         ],
@@ -32,7 +33,7 @@ class _ItemMenuLeftState extends State<ItemMenuLeft> {
       Column(
         children: [
           Icon(Icons.home, color: WHITE,),
-          textView(widget.menu.category_name.toUpperCase(), WHITE, 5, FontWeight.bold),
+          textView(widget.menu.category_name.toUpperCase(), WHITE, 6, FontWeight.bold),
         ],
       ),
     );
@@ -40,8 +41,9 @@ class _ItemMenuLeftState extends State<ItemMenuLeft> {
 }
 
 class ItemMenuLeftFocus extends StatefulWidget {
-  ItemMenuLeftFocus({Key key, this.menu}) : super(key: key);
+  ItemMenuLeftFocus({Key key, this.menu, this.width}) : super(key: key);
   final MenuLeft menu;
+  final double width;
 
   @override
   _ItemMenuLeftFocusState createState() => _ItemMenuLeftFocusState();
@@ -57,7 +59,7 @@ class _ItemMenuLeftFocusState extends State<ItemMenuLeftFocus> {
       child: !Common.isPortrait(context) ?
       Row(
         children: [
-          textView(widget.menu.category_name.toUpperCase(), BLACK, 15, FontWeight.bold),
+          textView(widget.menu.category_name.toUpperCase(), BLACK, widget.width * 0.01, FontWeight.bold),
           Spacer(flex: 1,),
           Icon(Icons.home, color: BLACK)
         ],
@@ -65,7 +67,7 @@ class _ItemMenuLeftFocusState extends State<ItemMenuLeftFocus> {
       Column(
         children: [
           Icon(Icons.home, color: BLACK),
-          textView(widget.menu.category_name.toUpperCase(), BLACK, 5, FontWeight.bold),
+          textView(widget.menu.category_name.toUpperCase(), BLACK, 6, FontWeight.bold),
         ],
       ),
     );

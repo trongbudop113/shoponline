@@ -35,8 +35,10 @@ class _HomePageState extends State<HomePage> implements HomeContract {
     var itemHeight = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: CustomAppBar(height: itemHeight * 0.03, width: itemWidth, homePresenter: homePresenter),
       body: CustomScrollView(
+        physics: BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: BannerPage(),

@@ -59,6 +59,8 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
     var itemWidthCus = MediaQuery.of(context).size.width;
     var itemHeight = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
 
+    var widthLeft = ((itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.13) > 70 ? ((itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.13) : 70;
+
     return Container(
       margin: EdgeInsets.all(itemWidth * 0.02),
       height: itemHeight * 1.25,
@@ -66,7 +68,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
       child: Row(
         children: [
           Container(
-            width: (itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.13,
+            width: widthLeft,
             child: FutureBuilder<List<MenuLeft>>(
                 future: postItem,
                 builder: (context, snapshot) {
@@ -95,13 +97,13 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
                               onTap: (){
                                 changeButtonState(i, menuLeft[i]);
                               },
-                              child: ItemMenuLeftFocus(menu: menuLeft[i]),
+                              child: ItemMenuLeftFocus(menu: menuLeft[i], width: itemWidth),
                             ) : InkWell(
                               hoverColor: Colors.white,
                               onTap: (){
                                 changeButtonState(i, menuLeft[i]);
                               },
-                              child: ItemMenuLeft(menu: menuLeft[i]),
+                              child: ItemMenuLeft(menu: menuLeft[i], width: itemWidth,),
                             );
                           },
                         );

@@ -1,15 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
-import 'package:flutter_project/values/string_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ItemBodyRight extends StatefulWidget {
   ItemBodyRight({Key key, this.item, this.menuLeftPresenter}) : super(key: key);
@@ -24,6 +21,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
 
   int _itemCount = 0;
   CartPresenter cartPresenter;
+  bool isHover = false;
 
   @override
   void initState() {
@@ -48,86 +46,116 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
     var itemWidth = MediaQuery.of(context).size.width;
     var itemHeight = MediaQuery.of(context).size.height;
 
-    return Container(
-      child: CachedNetworkImage(
-        imageUrl: widget.item.image,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            border: Border.all(width: 1, color: BLACK),
-            image: DecorationImage(
-                image: imageProvider,
-                fit: BoxFit.cover),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.all(itemWidth* 0.01),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      widget.item.discount == '0' ? Container() : Container(
-                        width: itemWidth * 0.02,
-                        height: itemWidth * 0.02,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(60)),
-                            border: Border.all(color: Colors.purple[200])
-                        ),
-                        child: textView(widget.item.discount + '%', Colors.purple[200], itemWidth * 0.008, FontWeight.bold),
-                      ),
-                      Spacer(flex: 1),
-                      IconButton(icon: new Icon(Icons.favorite, size: itemWidth* 0.015),onPressed: ()=>setState((){}))
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.all(itemWidth* 0.01),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      IconButton(icon: new Icon(Icons.remove_circle_outline),onPressed: ()=>setState(() => _itemCount > 0 ? _itemCount -- : 0)),
-                      textView(_itemCount.toString(), Colors.purple[200], 18, FontWeight.bold),
-                      IconButton(icon: new Icon(Icons.add_circle_outline_rounded),onPressed: ()=>setState(()=>_itemCount >= 0 ? _itemCount ++ : 0)),
-                      Spacer(flex: 1),
-                      InkWell(
-                        onTap: () async {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          bool isLogin = prefs.getBool(Common.LOGIN) ?? false;
-                          if(isLogin){
-                            _itemCount == 0 ?
-                            widget.menuLeftPresenter.showToastMessage(PageName.CHOOSE_ITEM) :
-                            onClickAddToCart(widget.item);
-                          }else{
+    var widthTextDisCount = (itemWidth * 0.02) > 35 ? itemWidth * 0.02 : 35;
+    var sizeTextDisCount = 10.0;
+    var sizeTextName = (itemWidth * 0.01) > 14 ? itemWidth * 0.01 : 14;
+    var widthButton = (itemWidth * 0.05) > 50 ? (itemWidth * 0.05) : 50;
+    var sizeButton = (itemWidth * 0.02) > 20 ? (itemWidth * 0.02) : 20;
 
-                          }
-                        },
-                        focusColor: Colors.grey,
-                        hoverColor: Colors.grey,
-                        child: Container(
-                          width: itemWidth* 0.015,
-                          height: itemWidth* 0.015,
-                          child: Icon(Icons.add_shopping_cart),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
+    Widget itemButton(IconData icon){
+      return InkWell(
+        child: Container(
+          width: widthButton,
+          height: widthButton,
+          color: BLACK,
+          child: Icon(icon, color: WHITE, size: sizeButton),
         ),
-        placeholder: (context, url) => CircularProgressIndicator(),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      )
+      );
+    }
+
+    return InkWell(
+      onHover: (value){
+        setState(() {
+          isHover = value;
+        });
+      },
+      onTap: (){
+        print('tap');
+      },
+      child: Container(
+          child: CachedNetworkImage(
+            imageUrl: widget.item.image,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: BLACK),
+                image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(itemWidth * 0.01),
+                      child: widget.item.discount == '0' ?
+                      Container() :
+                      Container(
+                        color: BLACK,
+                        width: widthTextDisCount,
+                        height: widthTextDisCount,
+                        alignment: Alignment.center,
+                        child: textView('-' + widget.item.discount + '%', WHITE, sizeTextDisCount, FontWeight.normal),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      color: BLACK,
+                      padding: EdgeInsets.all(itemWidth* 0.01),
+                      child: Column(
+                        children: [
+                          Container(
+                            child: textView( widget.item.name, WHITE, sizeTextName, FontWeight.bold),
+                          ),
+                          Container(
+                            child: textView(widget.item.price, WHITE, sizeTextName, FontWeight.normal),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  isHover ?
+                  Container(
+                    color: Color.fromRGBO(0, 0, 0, 80),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            itemButton(Icons.favorite),
+                            SizedBox(width: 5,),
+                            itemButton(Icons.add_shopping_cart)
+                          ],
+                        ),
+                        SizedBox(height: 5,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            itemButton(Icons.favorite),
+                            SizedBox(width: 5,),
+                            itemButton(Icons.subdirectory_arrow_right_outlined)
+                          ],
+                        ),
+                      ],
+                    )
+                  ) :
+                  Container(),
+                ],
+              )
+            ),
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          )
+      ),
     );
   }
 
