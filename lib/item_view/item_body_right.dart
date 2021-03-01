@@ -7,6 +7,7 @@ import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:toast/toast.dart';
 
 class ItemBodyRight extends StatefulWidget {
   ItemBodyRight({Key key, this.item, this.menuLeftPresenter}) : super(key: key);
@@ -40,6 +41,17 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
     widget.menuLeftPresenter.checkLoginToAddToCart(cart, cartPresenter);
   }
 
+  void onClickAddToWishLish(BodyRight item) {
+    CartItem cart = new CartItem();
+    cart.quantity = _itemCount;
+    cart.id = item.id;
+    cart.name = item.name;
+    cart.image = item.image;
+    cart.discount = item.discount;
+    cart.price = item.price;
+    widget.menuLeftPresenter.checkLoginToAddToWishList(cart, cartPresenter);
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -52,7 +64,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
     var widthButton = (itemWidth * 0.05) > 50 ? (itemWidth * 0.05) : 50;
     var sizeButton = (itemWidth * 0.02) > 20 ? (itemWidth * 0.02) : 20;
 
-    Widget itemButton(IconData icon){
+    Widget itemButton(IconData icon, int type){
       return InkWell(
         child: Container(
           width: widthButton,
@@ -60,6 +72,18 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
           color: BLACK,
           child: Icon(icon, color: WHITE, size: sizeButton),
         ),
+        onTap: (){
+          switch(type){
+            case 1 : {
+              onClickAddToCart(widget.item);
+              break;
+            }
+            case 0 : {
+              onClickAddToWishLish(widget.item);
+              break;
+            }
+          }
+        },
       );
     }
 
@@ -130,9 +154,9 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            itemButton(Icons.favorite),
+                            itemButton(Icons.favorite, 0),
                             SizedBox(width: 5,),
-                            itemButton(Icons.add_shopping_cart)
+                            itemButton(Icons.add_shopping_cart, 1)
                           ],
                         ),
                         SizedBox(height: 5,),
@@ -140,9 +164,9 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            itemButton(Icons.favorite),
+                            itemButton(Icons.favorite, 2),
                             SizedBox(width: 5,),
-                            itemButton(Icons.subdirectory_arrow_right_outlined)
+                            itemButton(Icons.subdirectory_arrow_right_outlined, 3)
                           ],
                         ),
                       ],
@@ -165,6 +189,17 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
       _itemCount = 0;
     });
     final snackBar = SnackBar(content: Text(bodyRight.name + ' added To Cart'), duration: Duration(seconds: 1));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  @override
+  void onAddToWishListExist(String message) {
+    Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+  }
+
+  @override
+  void onAddToWishListSuccess(CartItem bodyRight) {
+    final snackBar = SnackBar(content: Text(bodyRight.name + ' added To Wish List'), duration: Duration(seconds: 1));
     Scaffold.of(context).showSnackBar(snackBar);
   }
 }

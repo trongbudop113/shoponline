@@ -89,7 +89,7 @@ class _HeaderPageState extends State<HeaderPage> {
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: Text('0'),
+                      child: textView('0', WHITE, 18, FontWeight.normal),
                     )
                   ],
                 )

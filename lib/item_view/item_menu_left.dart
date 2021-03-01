@@ -55,6 +55,7 @@ class _ItemMenuLeftFocusState extends State<ItemMenuLeftFocus> {
   Widget build(BuildContext context) {
     return Container(
       height: 70,
+      color: WHITE,
       padding: EdgeInsets.all(12),
       child: !Common.isPortrait(context) ?
       Row(

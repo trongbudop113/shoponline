@@ -58,12 +58,38 @@ class MenuLeftPresenter {
 
   Future<void> checkLoginToAddToCart(CartItem bodyRight, CartPresenter cartPresenter) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var isLogin = prefs.getBool(Common.LOGIN);
+    var isLogin = prefs.getBool(Common.LOGIN) ?? false;
     if(isLogin && _firebaseAuth.currentUser != null){
       addToCart(bodyRight, cartPresenter);
     }else{
       print('logiinaaaaaaaaaaaaaaaaaaaaaaa');
     }
+  }
+
+  Future<void> checkLoginToAddToWishList(CartItem bodyRight, CartPresenter cartPresenter) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var isLogin = prefs.getBool(Common.LOGIN) ?? false;
+    if(isLogin && _firebaseAuth.currentUser != null){
+      addToWishList(bodyRight, cartPresenter);
+    }else{
+      print('logiinaaaaaaaaaaaaaaaaaaaaaaa');
+    }
+  }
+
+  addToWishList(CartItem bodyRight, CartPresenter cartPresenter){
+    fs.Firestore store = firestore();
+    fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_WISH_LIST);
+    var doc = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
+    doc.doc(bodyRight.id).get().then((value) {
+      if(value.exists){
+        cartPresenter.onAddToWishListExist(bodyRight.name + ' is existed in your list');
+      }else{
+        doc.doc(bodyRight.id).set(bodyRight.toJson()).whenComplete(() {
+          cartPresenter.onAddToWishListSuccess(bodyRight);
+        });
+      }
+    });
+
   }
 
   addToCart(CartItem bodyRight, CartPresenter cartPresenter){

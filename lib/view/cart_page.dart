@@ -96,18 +96,17 @@ class _CartPageState extends State<CartPage> {
                       Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                            padding: EdgeInsets.symmetric(horizontal: itemWidth * 0.05, vertical: itemHeight * 0.02),
                             color: BLACK,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: itemWidth * 0.05),
                                 Row(
                                   children: [
                                     Container(
-                                      width: itemWidth * 0.3,
-                                      height: itemWidth * 0.3,
+                                      width: itemWidth * 0.2,
+                                      height: itemWidth * 0.2,
                                       color: Colors.white,
                                     ),
                                     Spacer(flex: 1),
@@ -120,6 +119,7 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                   ],
                                 ),
+                                SizedBox(height: itemHeight * 0.02),
                                 Row(
                                   children: [
                                     Container(
@@ -130,9 +130,9 @@ class _CartPageState extends State<CartPage> {
                                       child: Row(
                                         children: [
                                           textView('-', WHITE, textSize, FontWeight.normal),
-                                          SizedBox(width: 10,),
+                                          SizedBox(width: 12,),
                                           textViewCenter('1', WHITE, textSize, FontWeight.bold),
-                                          SizedBox(width: 10,),
+                                          SizedBox(width: 12,),
                                           textView('+', WHITE, textSize, FontWeight.normal),
                                         ],
                                       ),
@@ -163,6 +163,8 @@ class _CartPageState extends State<CartPage> {
                     Container(
                       color: BLACK,
                       width: itemWidth * 0.2,
+                      height: 50,
+                      alignment: Alignment.center,
                       child: textViewCenter('Apply', WHITE, 20, FontWeight.normal),
                     )
                   ],
@@ -181,7 +183,7 @@ class _CartPageState extends State<CartPage> {
             ),
             SliverToBoxAdapter(
               child: Container(
-                margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05, vertical: 10),
                 alignment: Alignment.centerRight,
                 child: textView('Giảm giá: ' + '20.000', BLACK, 20, FontWeight.normal),
               ),
@@ -190,7 +192,7 @@ class _CartPageState extends State<CartPage> {
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
                 alignment: Alignment.centerRight,
-                child: textView('Tổng:' + '80.000', BLACK, 20, FontWeight.normal),
+                child: textView('Tổng: ' + '80.000', BLACK, 20, FontWeight.normal),
               ),
             ),
             SliverToBoxAdapter(
@@ -198,6 +200,7 @@ class _CartPageState extends State<CartPage> {
                 alignment: Alignment.center,
                 margin: EdgeInsets.all(itemWidth * 0.05),
                 color: BLACK,
+                height: 50,
                 child: textView('Thanh toán', WHITE, 20, FontWeight.normal),
               ),
             ),
