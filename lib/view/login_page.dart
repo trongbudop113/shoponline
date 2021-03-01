@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/common/hide_keyboard.dart';
 import 'package:flutter_project/model/user.dart';
 import 'package:flutter_project/presenter/login/checkout_presenter.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
+import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/values/image_page.dart';
+import 'package:flutter_project/widget/text_widget.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -14,7 +18,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> implements LoginContract {
+class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implements LoginContract {
 
   LoginPresenter loginPresenter;
   CheckoutPresenter checkoutPresenter;
@@ -37,106 +41,20 @@ class _LoginPageState extends State<LoginPage> implements LoginContract {
     super.initState();
   }
 
-  Widget _entryFieldEmail() {
+  Widget _entryFieldText(TextEditingController textController, bool isPass, TextInputType inputType, String hint) {
     return TextField(
         keyboardType: TextInputType.emailAddress,
-        controller: emailTextController,
+        controller: textController,
+        obscuringCharacter: "*",
+        obscureText: isPass,
         decoration: InputDecoration(
             border: new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(20.0),
-              ),
               borderSide: BorderSide(
                 width: 0,
                 style: BorderStyle.none,
               ),
             ),
-            hintText: 'Enter your email address',
-            fillColor: Color(0xfff3f3f4),
-            filled: true
-        )
-    );
-  }
-
-  Widget _entryFieldPassword() {
-    return TextField(
-        keyboardType: TextInputType.visiblePassword,
-        controller: passwordTextController,
-        decoration: InputDecoration(
-            border: new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(20.0),
-              ),
-              borderSide: BorderSide(
-                width: 0,
-                style: BorderStyle.none,
-              ),
-            ),
-            hintText: 'Enter your password',
-            fillColor: Color(0xfff3f3f4),
-            filled: true
-        )
-    );
-  }
-
-  Widget _entryFieldName() {
-    return TextField(
-        keyboardType: TextInputType.text,
-        controller: nameTextController,
-        decoration: InputDecoration(
-            border: new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(20.0),
-              ),
-              borderSide: BorderSide(
-                width: 0,
-                style: BorderStyle.none,
-              ),
-            ),
-            hintText: 'Enter your name',
-            fillColor: Color(0xfff3f3f4),
-            filled: true
-        )
-    );
-  }
-
-  Widget _entryFieldPhone() {
-    return TextField(
-        keyboardType: TextInputType.phone,
-        inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-        controller: phoneTextController,
-        decoration: InputDecoration(
-            border: new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(20.0),
-              ),
-              borderSide: BorderSide(
-                width: 0,
-                style: BorderStyle.none,
-              ),
-            ),
-            hintText: 'Enter your phone number',
-            fillColor: Color(0xfff3f3f4),
-            filled: true
-        )
-    );
-  }
-
-  Widget _entryFieldAddress() {
-    return TextField(
-        keyboardType: TextInputType.streetAddress,
-        controller: addressTextController,
-        decoration: InputDecoration(
-            border: new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(20.0),
-              ),
-              borderSide: BorderSide(
-                width: 0,
-                style: BorderStyle.none,
-              ),
-            ),
-            hintText: 'Enter your address',
+            hintText: hint,
             fillColor: Color(0xfff3f3f4),
             filled: true
         )
@@ -161,229 +79,247 @@ class _LoginPageState extends State<LoginPage> implements LoginContract {
       });
   }
 
+  FocusScopeNode currentFocus;
+  void clearFocus(){
+    hideKeyboard();
+    currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
     var itemWidth = MediaQuery.of(context).size.width;
     var itemHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-        body: Center(
-          child: Row(
-            children: [
-              Container(
-                height: itemHeight * 0.8,
-                width: itemHeight * 0.8,
-                child: FlutterLogo(),
-              ),
-              Spacer(flex: 1,),
-              isGoToRegister ?
-              Container(
-                margin: EdgeInsets.only(right: itemWidth * 0.1),
-                width: itemWidth * 0.3,
-                height: itemHeight * 0.8,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                    color: Colors.pink[100]
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: InkWell(
-                        focusColor: Colors.grey,
-                        hoverColor: Colors.grey,
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          child: Icon(
-                              Icons.arrow_back
-                          ),
-                        ),
-                        onTap: (){
-                          setState(() {
-                            isGoToRegister = false;
-                          });
-                        },
-                      ),
-                      left: itemWidth * 0.01,
-                      top: itemWidth * 0.01,
-                    ),
-                    Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              child: FlutterLogo(),
-                              width: itemWidth * 0.1,
-                              height: itemWidth * 0.1,
-                            ),
-                            SizedBox(height: itemHeight * 0.03,),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                              child: _entryFieldName(),
-                            ),
-                            SizedBox(height: 20,),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                              child: _entryFieldPhone(),
-                            ),
-                            SizedBox(height: 20,),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                              child: _entryFieldAddress(),
-                            ),
-                            SizedBox(height: itemHeight * 0.03,),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                              child: Row(
-                                children: [
-                                  new Radio(
-                                    value: 0,
-                                    groupValue: _radioValue,
-                                    onChanged: _handleRadioValueChange,
-                                  ),
-                                  new Text('Male'),
-                                  Spacer(flex: 1,),
-                                  new Radio(
-                                    value: 1,
-                                    groupValue: _radioValue,
-                                    onChanged: _handleRadioValueChange,
-                                  ),
-                                  new Text('Female'),
-                                  Spacer(flex: 1,),
-                                  new Radio(
-                                    value: 2,
-                                    groupValue: _radioValue,
-                                    onChanged: _handleRadioValueChange,
-                                  ),
-                                  new Text('Other'),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20,),
-                            InkWell(
-                              child: Container(
-                                width: itemWidth * 0.2,
-                                padding: EdgeInsets.symmetric(vertical: 15),
-                                decoration: BoxDecoration(
-                                  color: Colors.greenAccent,
-                                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                                ),
-                                child: Text('Continue login', textAlign: TextAlign.center,),
-                              ),
-                              onTap: (){
-                                setUserData();
-                              },
-                            ),
-                          ],
-                        )
-                    )
-                  ],
-                ),
-              ) :
-              Container(
-                margin: EdgeInsets.only(right: itemWidth * 0.1),
-                height: itemHeight * 0.8,
-                width: itemWidth * 0.3,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                    color: Colors.pink[100]
-                ),
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+    var itemWidthRight = MediaQuery.of(context).size.width * (!Common.isPortrait(context) ? 0.4 : 0.8);
+
+    return GestureDetector(
+      child: Scaffold(
+          backgroundColor: Colors.grey[200],
+          body: Center(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                !Common.isPortrait(context) ? Container(
+                  height: itemHeight * 0.85,
+                  width: itemWidth * 0.5,
+                  child: FlutterLogo(),
+                ) : Container(),
+                !Common.isPortrait(context) ? Spacer(flex: 1,) : Container(),
+                isGoToRegister ?
+                Container(
+                  margin: EdgeInsets.only(right: itemWidth * 0.05, left: itemWidth * 0.05),
+                  width: itemWidthRight,
+                  height: itemHeight * 0.85,
+                  color: BLACK,
+                  child: Stack(
                     children: [
-                      Container(
-                        child: FlutterLogo(),
-                        width: itemWidth * 0.1,
-                        height: itemWidth * 0.1,
-                      ),
-                      SizedBox(height: itemHeight * 0.05,),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                        child: _entryFieldEmail(),
-                      ),
-                      SizedBox(height: 20,),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                        child: _entryFieldPassword(),
-                      ),
-                      SizedBox(height: 20,),
-                      InkWell(
-                        child: Container(
-                          width: itemWidth * 0.2,
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent,
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                      Positioned(
+                        child: InkWell(
+                          focusColor: WHITE,
+                          hoverColor: WHITE,
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            child: Icon(
+                              Icons.arrow_back,
+                              color: WHITE,
+                            ),
                           ),
-                          child: Text('Login', textAlign: TextAlign.center,),
+                          onTap: (){
+                            setState(() {
+                              isGoToRegister = false;
+                            });
+                          },
                         ),
-                        onTap: (){
-                          loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
-                        },
+                        left: itemWidth * 0.01,
+                        top: itemWidth * 0.01,
                       ),
-                      SizedBox(height: 20,),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            child: Container(
-                                width: itemWidth * 0.1 - 10,
-                                padding: EdgeInsets.symmetric(vertical: 15),
-                                decoration: BoxDecoration(
-                                  color: Colors.greenAccent,
-                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                      CustomScrollView(
+                        physics: BouncingScrollPhysics(),
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: itemHeight * 0.1),
+                                Container(
+                                  child: FlutterLogo(),
+                                  width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                  height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
                                 ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(PageImage.IC_GOOGLE, width: 20, height: 20,),
-                                    SizedBox(width: 5,),
-                                    Text('Google', textAlign: TextAlign.center,),
-                                  ],
-                                )
-                            ),
-                            onTap: (){
-                              loginPresenter.handleLoginGoogle(context);
-                            },
-                          ),
-                          SizedBox(width: 20,),
-                          InkWell(
-                            child: Container(
-                                width: itemWidth * 0.1 - 10,
-                                padding: EdgeInsets.symmetric(vertical: 15),
-                                decoration: BoxDecoration(
-                                  color: Colors.greenAccent,
-                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                SizedBox(height: itemHeight * 0.03,),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                  child: _entryFieldText(nameTextController, false, TextInputType.text, 'Enter your name'),
                                 ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(PageImage.IC_FACEBOOK, width: 20, height: 20,),
-                                    SizedBox(width: 5,),
-                                    Text('Facebook', textAlign: TextAlign.center,),
-                                  ],
-                                )
+                                SizedBox(height: 20,),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                  child: _entryFieldText(phoneTextController, false, TextInputType.phone, 'Enter your phone number'),
+                                ),
+                                SizedBox(height: 20,),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                  child: _entryFieldText(addressTextController, false, TextInputType.streetAddress, 'Enter your address'),
+                                ),
+                                SizedBox(height: itemHeight * 0.03,),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                  child: Row(
+                                    children: [
+                                      new Radio(
+                                        value: 0,
+                                        groupValue: _radioValue,
+                                        onChanged: _handleRadioValueChange,
+                                      ),
+                                      textView('Male', WHITE, 14, FontWeight.normal),
+                                      Spacer(flex: 1,),
+                                      new Radio(
+                                        value: 1,
+                                        groupValue: _radioValue,
+                                        onChanged: _handleRadioValueChange,
+                                      ),
+                                      textView('Female', WHITE, 14, FontWeight.normal),
+                                      Spacer(flex: 1,),
+                                      new Radio(
+                                        value: 2,
+                                        groupValue: _radioValue,
+                                        onChanged: _handleRadioValueChange,
+                                      ),
+                                      textView('Other', WHITE, 14, FontWeight.normal),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: itemHeight * 0.05),
+                                InkWell(
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
+                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                    color: WHITE,
+                                    child: textView('Login', BLACK, 15, FontWeight.normal),
+                                  ),
+                                  onTap: (){
+                                    setUserData();
+                                  },
+                                ),
+                                SizedBox(height: itemHeight * 0.1),
+                              ],
                             ),
-                            onTap: (){
-                              loginPresenter.handleLoginFacebook(context);
-                            },
                           )
                         ],
                       )
                     ],
-                  )
-                ),
-              )
-            ],
-          ),
-        )
+                  ),
+                ) :
+                Container(
+                    margin: EdgeInsets.only(right: itemWidth * 0.05, left: itemWidth * 0.05),
+                    alignment: Alignment.center,
+                    height: itemHeight * 0.85,
+                    width: itemWidthRight,
+                    color: BLACK,
+                    child: CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: itemHeight * 0.1),
+                                Container(
+                                  child: FlutterLogo(),
+                                  width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                  height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                ),
+                                SizedBox(height: itemHeight * 0.05,),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                  child: _entryFieldText(emailTextController, false, TextInputType.emailAddress, 'Enter your email address'),
+                                ),
+                                SizedBox(height: 20,),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                  child: _entryFieldText(passwordTextController, true, TextInputType.text, 'Enter your password'),
+                                ),
+                                SizedBox(height: itemHeight * 0.05),
+                                InkWell(
+                                  child: Container(
+                                    width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
+                                    padding: EdgeInsets.symmetric(vertical: 15),
+                                    color: WHITE,
+                                    child: Text('Login', textAlign: TextAlign.center,),
+                                  ),
+                                  onTap: (){
+                                    loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
+                                  },
+                                ),
+                                SizedBox(height: 20),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      child: Container(
+                                          width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35) - 10,
+                                          padding: EdgeInsets.symmetric(vertical: 15),
+                                          color: WHITE,
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Image.asset(PageImage.IC_GOOGLE, width: 20, height: 20,),
+                                              SizedBox(width: 5,),
+                                              Text('Google', textAlign: TextAlign.center,),
+                                            ],
+                                          )
+                                      ),
+                                      onTap: (){
+                                        loginPresenter.handleLoginGoogle(context);
+                                      },
+                                    ),
+                                    SizedBox(width: 20,),
+                                    InkWell(
+                                      child: Container(
+                                          width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35) - 10,
+                                          padding: EdgeInsets.symmetric(vertical: 15),
+                                          color: WHITE,
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Image.asset(PageImage.IC_FACEBOOK, width: 20, height: 20,),
+                                              SizedBox(width: 5,),
+                                              Text('Facebook', textAlign: TextAlign.center,),
+                                            ],
+                                          )
+                                      ),
+                                      onTap: (){
+                                        loginPresenter.handleLoginFacebook(context);
+                                      },
+                                    ),
+                                    SizedBox(height: itemHeight * 0.1),
+                                  ],
+                                ),
+                              ],
+                            )
+                        ),
+                      ],
+                    )
+                )
+              ],
+            ),
+          )
+      ),
+      onTap: (){
+        clearFocus();
+      },
     );
   }
 

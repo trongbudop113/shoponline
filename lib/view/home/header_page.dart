@@ -47,7 +47,7 @@ class _HeaderPageState extends State<HeaderPage> {
           Spacer(flex: 1,),
           InkWell(
             onTap: (){
-
+              widget.homePresenter.goToWishList(context);
             },
             focusColor: Colors.white,
             hoverColor: Colors.white,
@@ -73,7 +73,7 @@ class _HeaderPageState extends State<HeaderPage> {
           SizedBox(width: 20,),
           InkWell(
             onTap: (){
-
+              widget.homePresenter.goToCartDetail(context);
             },
             focusColor: Colors.grey,
             hoverColor: Colors.grey,

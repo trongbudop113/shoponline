@@ -14,3 +14,17 @@ Widget textView(String text, Color color, double size, FontWeight fontWeight){
     ),
   );
 }
+
+Widget textViewCenter(String text, Color color, double size, FontWeight fontWeight){
+  return Text(
+    text,
+    textAlign: TextAlign.center,
+    style: GoogleFonts.bungee(
+      textStyle: TextStyle(
+          color: color,
+      ),
+      fontSize: size,
+      fontWeight: fontWeight,
+    ),
+  );
+}
