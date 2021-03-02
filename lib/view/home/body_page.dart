@@ -5,6 +5,7 @@ import 'package:flutter_project/item_view/item_menu_left.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
+import 'package:flutter_project/view/cart_detail_page.dart';
 import 'package:flutter_project/view/home/body_right_home.dart';
 import 'package:toast/toast.dart';
 
@@ -124,8 +125,10 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   }
 
   @override
-  void goToDetail(MenuLeft menuLeft) {
-
+  void goToDetail(BodyRight bodyRight) {
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CartDetailPage()
+    ));
   }
 
   @override

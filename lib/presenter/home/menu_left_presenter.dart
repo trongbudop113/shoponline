@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
@@ -11,7 +13,7 @@ import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class MenuLeftContract {
-  void goToDetail(MenuLeft menuLeft);
+  void goToDetail(BodyRight bodyRight);
   void showMessageError(String message, BuildContext buildContext);
   void showToastMessage(String message);
   void onSuccess();
@@ -117,8 +119,8 @@ class MenuLeftPresenter {
     _view.onSuccess();
   }
 
-  goToDetail(MenuLeft menuLeft) {
-    _view.goToDetail(menuLeft);
+  goToDetail(BodyRight bodyRight) {
+    _view.goToDetail(bodyRight);
   }
 
   showToastMessage(String message){

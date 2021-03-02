@@ -94,7 +94,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
         });
       },
       onTap: (){
-        print('tap');
+        widget.menuLeftPresenter.goToDetail(widget.item);
       },
       child: Container(
           child: CachedNetworkImage(
@@ -157,16 +157,6 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
                             itemButton(Icons.favorite, 0),
                             SizedBox(width: 5,),
                             itemButton(Icons.add_shopping_cart, 1)
-                          ],
-                        ),
-                        SizedBox(height: 5,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            itemButton(Icons.favorite, 2),
-                            SizedBox(width: 5,),
-                            itemButton(Icons.subdirectory_arrow_right_outlined, 3)
                           ],
                         ),
                       ],
