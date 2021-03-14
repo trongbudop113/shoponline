@@ -12,7 +12,10 @@ abstract class LoginContract {
   void backToHome();
   void goToRegister(String userId, String type);
   void onRegisterSuccess();
+  void onGoToRegister();
   void showMessageError(String message, BuildContext buildContext);
+  void onShowProgressDialog();
+  void onHideProgressDialog();
 }
 
 class LoginPresenter {
@@ -25,7 +28,7 @@ class LoginPresenter {
   static final facebookSignIn = FacebookLoginWeb();
 
   handleLoginGoogle(BuildContext mContext) async {
-
+    onShowProgressDialog();
     await signInWithGoogle().then((value) {
         if(value != null){
           onLoginSuccess(value, 'google');
@@ -36,7 +39,7 @@ class LoginPresenter {
   }
 
   handleLoginFacebook(BuildContext mContext) async {
-
+    onShowProgressDialog();
     await loginWithFacebook().then((value) {
       if(value != null){
         onLoginSuccess(value, 'facebook');
@@ -47,10 +50,12 @@ class LoginPresenter {
   }
 
   showMessageError(String message, BuildContext buildContext){
+    onHideProgressDialog();
     _view.showMessageError(message, buildContext);
   }
 
   onLoginSuccess(String userId, String type){
+    onHideProgressDialog();
     _view.loginSuccess(userId, type);
   }
 
@@ -111,7 +116,7 @@ class LoginPresenter {
   }
 
   Future<void> registerWithEmailPassword(String email, String password, BuildContext mContext) async {
-    // Initialize Firebase
+    onShowProgressDialog();
     await Firebase.initializeApp();
 
     try{
@@ -148,7 +153,7 @@ class LoginPresenter {
   }
 
   Future<void> loginWithEmailAndPassword(String email, String password, BuildContext mContext) async {
-    // Initialize Firebase
+    onShowProgressDialog();
     await Firebase.initializeApp();
 
     try{
@@ -182,5 +187,17 @@ class LoginPresenter {
     }
 
     return null;
+  }
+
+  onGoToRegister(){
+    _view.onGoToRegister();
+  }
+
+  onShowProgressDialog(){
+    _view.onShowProgressDialog();
+  }
+
+  onHideProgressDialog(){
+    _view.onHideProgressDialog();
   }
 }

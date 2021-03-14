@@ -1,11 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
-import 'package:flutter_project/common/database_collection.dart';
-import 'package:flutter_project/model/cart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase/firebase.dart';
-import 'package:firebase/firestore.dart' as fs;
 
 abstract class HomeContract {
   void goToCartDetail();

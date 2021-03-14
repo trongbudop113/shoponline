@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/view/cart_page.dart';
+import 'package:flutter_project/view/favorite_page.dart';
 import 'package:flutter_project/view/home/banner_page.dart';
 import 'package:flutter_project/view/home/body_page.dart';
 import 'package:flutter_project/view/home/footer_page.dart';
@@ -51,10 +52,10 @@ class _HomePageState extends State<HomePage> implements HomeContract {
           )
         ],
       ),
-      bottomNavigationBar: Container(
-        color: BLACK,
-        height: 60,
-      ),
+      // bottomNavigationBar: Container(
+      //   color: BLACK,
+      //   height: 60,
+      // ),
     );
   }
 
@@ -67,7 +68,9 @@ class _HomePageState extends State<HomePage> implements HomeContract {
 
   @override
   void goToWishList() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => FavoritePage()
+    ));
   }
 
   @override

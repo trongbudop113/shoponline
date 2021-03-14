@@ -6,6 +6,7 @@ class DatabaseCollection {
   static const String ALL_CART = "all_cart";
   static const String ALL_WISH_LIST = "all_wish";
   static const String ALL_REQUESTS = "all_requests";
+  static const String ALL_CODE = "all_code";
 
   //Document
   static const String PRODUCTS = "products";

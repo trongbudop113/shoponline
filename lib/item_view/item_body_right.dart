@@ -41,7 +41,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
     widget.menuLeftPresenter.checkLoginToAddToCart(cart, cartPresenter);
   }
 
-  void onClickAddToWishLish(BodyRight item) {
+  void onClickAddToWishList(BodyRight item) {
     CartItem cart = new CartItem();
     cart.quantity = _itemCount;
     cart.id = item.id;
@@ -79,7 +79,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
               break;
             }
             case 0 : {
-              onClickAddToWishLish(widget.item);
+              onClickAddToWishList(widget.item);
               break;
             }
           }

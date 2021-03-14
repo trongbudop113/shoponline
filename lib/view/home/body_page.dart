@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/item_view/item_menu_left.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/menu_left.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/view/cart_detail_page.dart';
+import 'package:flutter_project/view/detail_item_shop_page.dart';
 import 'package:flutter_project/view/home/body_right_home.dart';
 import 'package:toast/toast.dart';
 
@@ -24,6 +26,8 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   MenuLeftPresenter menuLeftPresenter;
   Future<List<MenuLeft>> postItem;
   Future<List<BodyRight>> postRequest;
+
+  bool _isShow = false;
 
   @override
   void initState() {
@@ -116,8 +120,24 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
           Container(
             width: (itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.87,
             padding: EdgeInsets.only(left: itemWidthCus * 0.02),
-            child: itemPos == 0 ? ContainBodyHome() :
-            ContainBodyRight(width: itemWidthCus, height: itemHeight, postItem: postRequest, menuLeftPresenter: menuLeftPresenter, title: menuLeft[itemPos].category_name.toUpperCase()),
+            child: Stack(
+              children: [
+                itemPos == 0 ?
+                ContainBodyHome(
+
+                ) :
+                ContainBodyRight(
+                    width: itemWidthCus,
+                    height: itemHeight,
+                    postItem: postRequest,
+                    menuLeftPresenter: menuLeftPresenter,
+                    title: menuLeft[itemPos].category_name.toUpperCase()
+                ),
+                _isShow ? Center(
+                  child: IndicatorProgress(),
+                ) : Container()
+              ],
+            )
           )
         ],
       ),
@@ -127,7 +147,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   @override
   void goToDetail(BodyRight bodyRight) {
     Navigator.push(context, MaterialPageRoute(
-        builder: (context) => CartDetailPage()
+        builder: (context) => ItemDetailPage()
     ));
   }
 
@@ -145,6 +165,20 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
   void onSuccess() {
     setState(() {
       
+    });
+  }
+
+  @override
+  void onHideProgressDialog() {
+    setState(() {
+      _isShow = false;
+    });
+  }
+
+  @override
+  void onShowProgressDialog() {
+    setState(() {
+      _isShow = true;
     });
   }
 }

@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/hide_keyboard.dart';
+import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/model/user.dart';
 import 'package:flutter_project/presenter/login/checkout_presenter.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/values/image_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -28,11 +30,16 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   String typeLogin = '';
   String gender = 'male';
 
+  bool _isShow = false;
+
   TextEditingController phoneTextController = TextEditingController();
   TextEditingController nameTextController = TextEditingController();
   TextEditingController addressTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
+
+  var textStyle = GoogleFonts.bungee(fontSize: 10);
+  var textStyleText = GoogleFonts.bungee(fontSize: 15);
 
   @override
   void initState() {
@@ -47,6 +54,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
         controller: textController,
         obscuringCharacter: "*",
         obscureText: isPass,
+        style: textStyle,
         decoration: InputDecoration(
             border: new OutlineInputBorder(
               borderSide: BorderSide(
@@ -55,6 +63,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
               ),
             ),
             hintText: hint,
+            hintStyle: textStyle,
             fillColor: Color(0xfff3f3f4),
             filled: true
         )
@@ -99,6 +108,9 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
     return GestureDetector(
       child: Scaffold(
           backgroundColor: Colors.grey[200],
+          appBar: AppBar(
+            backgroundColor: BLACK,
+          ),
           body: Center(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -214,6 +226,9 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                             ),
                           )
                         ],
+                      ),
+                      Center(
+                        child: _isShow ? IndicatorProgress() : Container(),
                       )
                     ],
                   ),
@@ -224,92 +239,109 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                     height: itemHeight * 0.85,
                     width: itemWidthRight,
                     color: BLACK,
-                    child: CustomScrollView(
-                      physics: BouncingScrollPhysics(),
-                      slivers: [
-                        SliverToBoxAdapter(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(height: itemHeight * 0.1),
-                                Container(
-                                  child: FlutterLogo(),
-                                  width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
-                                  height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
-                                ),
-                                SizedBox(height: itemHeight * 0.05,),
-                                Container(
-                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                                  child: _entryFieldText(emailTextController, false, TextInputType.emailAddress, 'Enter your email address'),
-                                ),
-                                SizedBox(height: 20,),
-                                Container(
-                                  margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                                  child: _entryFieldText(passwordTextController, true, TextInputType.text, 'Enter your password'),
-                                ),
-                                SizedBox(height: itemHeight * 0.05),
-                                InkWell(
-                                  child: Container(
-                                    width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    color: WHITE,
-                                    child: Text('Login', textAlign: TextAlign.center,),
-                                  ),
-                                  onTap: (){
-                                    loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
-                                  },
-                                ),
-                                SizedBox(height: 20),
-                                Row(
+                    child: Stack(
+                      children: [
+                        CustomScrollView(
+                          physics: BouncingScrollPhysics(),
+                          slivers: [
+                            SliverToBoxAdapter(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    InkWell(
-                                      child: Container(
-                                          width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35) - 10,
-                                          padding: EdgeInsets.symmetric(vertical: 15),
-                                          color: WHITE,
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(PageImage.IC_GOOGLE, width: 20, height: 20,),
-                                              SizedBox(width: 5,),
-                                              Text('Google', textAlign: TextAlign.center,),
-                                            ],
-                                          )
-                                      ),
-                                      onTap: (){
-                                        loginPresenter.handleLoginGoogle(context);
-                                      },
-                                    ),
-                                    SizedBox(width: 20,),
-                                    InkWell(
-                                      child: Container(
-                                          width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35) - 10,
-                                          padding: EdgeInsets.symmetric(vertical: 15),
-                                          color: WHITE,
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(PageImage.IC_FACEBOOK, width: 20, height: 20,),
-                                              SizedBox(width: 5,),
-                                              Text('Facebook', textAlign: TextAlign.center,),
-                                            ],
-                                          )
-                                      ),
-                                      onTap: (){
-                                        loginPresenter.handleLoginFacebook(context);
-                                      },
-                                    ),
                                     SizedBox(height: itemHeight * 0.1),
+                                    Container(
+                                      child: FlutterLogo(),
+                                      width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                      height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                    ),
+                                    SizedBox(height: itemHeight * 0.05,),
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                      child: _entryFieldText(emailTextController, false, TextInputType.emailAddress, 'Enter your email address'),
+                                    ),
+                                    SizedBox(height: 20,),
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                      child: _entryFieldText(passwordTextController, true, TextInputType.text, 'Enter your password'),
+                                    ),
+                                    Container(
+                                      height: itemHeight * 0.08,
+                                      alignment:  Alignment.center,
+                                      margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                      child: GestureDetector(
+                                        child: textView('SignUp here', WHITE, 15, FontWeight.normal),
+                                        onTap: (){
+                                          loginPresenter.onGoToRegister();
+                                        },
+                                      )
+                                    ),
+                                    InkWell(
+                                      child: Container(
+                                        width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
+                                        padding: EdgeInsets.symmetric(vertical: 15),
+                                        color: WHITE,
+                                        child: Text('Login', textAlign: TextAlign.center, style: textStyleText),
+                                      ),
+                                      onTap: (){
+                                        loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
+                                      },
+                                    ),
+                                    SizedBox(height: 20),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        InkWell(
+                                          child: Container(
+                                              width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35) - 10,
+                                              padding: EdgeInsets.symmetric(vertical: 15),
+                                              color: WHITE,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Image.asset(PageImage.IC_GOOGLE, width: 20, height: 20,),
+                                                  SizedBox(width: 5,),
+                                                  Text('Google', textAlign: TextAlign.center, style: textStyleText),
+                                                ],
+                                              )
+                                          ),
+                                          onTap: (){
+                                            loginPresenter.handleLoginGoogle(context);
+                                          },
+                                        ),
+                                        SizedBox(width: 20,),
+                                        InkWell(
+                                          child: Container(
+                                              width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35) - 10,
+                                              padding: EdgeInsets.symmetric(vertical: 15),
+                                              color: WHITE,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Image.asset(PageImage.IC_FACEBOOK, width: 20, height: 20,),
+                                                  SizedBox(width: 5,),
+                                                  Text('Facebook', textAlign: TextAlign.center, style: textStyleText),
+                                                ],
+                                              )
+                                          ),
+                                          onTap: (){
+                                            loginPresenter.handleLoginFacebook(context);
+                                          },
+                                        ),
+                                        SizedBox(height: itemHeight * 0.1),
+                                      ],
+                                    ),
                                   ],
-                                ),
-                              ],
-                            )
+                                )
+                            ),
+                          ],
                         ),
+                        Center(
+                          child: _isShow ? IndicatorProgress() : Container(),
+                        )
                       ],
                     )
                 )
@@ -362,5 +394,24 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   @override
   void onRegisterSuccess() {
     Navigator.pop(context, 'reload');
+  }
+
+  @override
+  void onHideProgressDialog() {
+    setState(() {
+      _isShow = false;
+    });
+  }
+
+  @override
+  void onShowProgressDialog() {
+    setState(() {
+      _isShow = true;
+    });
+  }
+
+  @override
+  void onGoToRegister() {
+
   }
 }

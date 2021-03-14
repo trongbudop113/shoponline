@@ -28,3 +28,17 @@ Widget textViewCenter(String text, Color color, double size, FontWeight fontWeig
     ),
   );
 }
+
+Widget textViewLine(String text, Color color, double size, FontWeight fontWeight, double line){
+  return Text(
+    text,
+    style: GoogleFonts.bungee(
+      textStyle: TextStyle(
+          color: color
+      ),
+      fontSize: size,
+      fontWeight: fontWeight,
+      height: line
+    ),
+  );
+}

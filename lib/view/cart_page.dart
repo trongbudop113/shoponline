@@ -1,9 +1,16 @@
+import 'package:firebase/firebase.dart';
+import 'package:firebase/firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/item_view/item_cart.dart';
+import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/presenter/cart/shop_cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:toast/toast.dart';
 
 class CartPage extends StatefulWidget {
   CartPage({Key key, this.title}) : super(key: key);
@@ -13,11 +20,39 @@ class CartPage extends StatefulWidget {
   _CartPageState createState() => _CartPageState();
 }
 
-class _CartPageState extends State<CartPage> {
+class _CartPageState extends State<CartPage> implements ShopCartContract {
 
   TextEditingController codeTextController = TextEditingController();
-
   var textSize = 22.0;
+
+  ShopCartPresenter shopCartPresenter;
+  List<CartItem> listCartItem = new List();
+  var _firebaseAuth = FirebaseAuth.instance;
+
+  Future<void> getListCart() async{
+    onShowProgressDialog();
+    Firestore store = firestore();
+    CollectionReference ref = store.collection(DatabaseCollection.ALL_CART);
+    var document = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
+    document.onSnapshot.listen((querySnapshot) {
+      querySnapshot.docChanges().forEach((change) {
+        if (change.type == "added") {
+          Map<String, dynamic> a = change.doc.data();
+          var item = CartItem.fromJson(a);
+          print(item.name);
+          listCartItem.add(item);
+        }
+      });
+    });
+    onGetDataSuccess();
+  }
+
+  @override
+  void initState() {
+    shopCartPresenter = new ShopCartPresenter(this);
+    getListCart();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +143,19 @@ class _CartPageState extends State<CartPage> {
 
     Widget paymentCart(){
       return SliverToBoxAdapter(
-        child: Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.all(itemWidth * 0.05),
-          color: BLACK,
-          height: 50,
-          child: textView('Thanh toán', WHITE, 20, FontWeight.normal),
+        child: GestureDetector(
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(itemWidth * 0.05),
+            color: BLACK,
+            height: 50,
+            child: textView('Thanh toán', WHITE, 20, FontWeight.normal),
+          ),
+          onTap: (){
+            setState(() {
+              getListCart();
+            });
+          },
         ),
       );
     }
@@ -129,10 +171,10 @@ class _CartPageState extends State<CartPage> {
         padding: isPortrait ? EdgeInsets.symmetric(horizontal: itemWidth * 0.05) : EdgeInsets.all(itemWidth * 0.05),
         sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) =>
-                ItemCartBody(itemHeight: itemHeightCustom, itemWidth: itemWidthCustom),
-              childCount: 5,
+                ItemCartBody(itemHeight: itemHeightCustom, itemWidth: itemWidthCustom, cartItem: listCartItem[index], shopCartPresenter: shopCartPresenter),
+              childCount: listCartItem.length,
             )
-        ),
+        )
       );
     }
 
@@ -148,18 +190,18 @@ class _CartPageState extends State<CartPage> {
           child: Row(
             children: [
               Container(
-                  width: itemWidth * 0.6,
-                  height: itemHeight,
-                  child: CustomScrollView(
-                    physics: BouncingScrollPhysics(),
-                    slivers: [
-                      spaceHeight(0.02),
-                      yourCart(),
-                      spaceHeight(0.02),
-                      listCart(true),
-                      spaceHeight(0.02),
-                    ],
-                  ),
+                width: itemWidth * 0.6,
+                height: itemHeight,
+                child: CustomScrollView(
+                  physics: BouncingScrollPhysics(),
+                  slivers: [
+                    spaceHeight(0.02),
+                    yourCart(),
+                    spaceHeight(0.02),
+                    listCart(true),
+                    spaceHeight(0.02),
+                  ],
+                ),
               ),
               Container(
                 width: itemWidth * 0.4,
@@ -190,6 +232,37 @@ class _CartPageState extends State<CartPage> {
           ],
         ),
       )
+
     );
+  }
+
+  @override
+  void onGetDataSuccess() {
+    // TODO: implement onGetDataSuccess
+  }
+
+  @override
+  void onHideProgressDialog() {
+    // TODO: implement onHideProgressDialog
+  }
+
+  @override
+  void onShowProgressDialog() {
+    // TODO: implement onShowProgressDialog
+  }
+
+  @override
+  void showMessageError(String message, BuildContext buildContext) {
+    // TODO: implement showMessageError
+  }
+
+  @override
+  void onUpdateSuccess(CartItem cartItem) {
+    Toast.show(cartItem.name + ' was updated success', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+  }
+
+  @override
+  void onDeleteSuccess() {
+
   }
 }

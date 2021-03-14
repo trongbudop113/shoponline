@@ -17,6 +17,8 @@ abstract class MenuLeftContract {
   void showMessageError(String message, BuildContext buildContext);
   void showToastMessage(String message);
   void onSuccess();
+  void onShowProgressDialog();
+  void onHideProgressDialog();
 }
 
 class MenuLeftPresenter {
@@ -27,6 +29,7 @@ class MenuLeftPresenter {
   MenuLeftPresenter(this._view);
 
   Future<List<BodyRight>> getListBody(String doc) async{
+    onShowProgressDialog();
     List<BodyRight> listBody = new List();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_PRODUCT);
@@ -45,13 +48,13 @@ class MenuLeftPresenter {
   }
 
   Future<List<MenuLeft>> getListData() async{
+    onShowProgressDialog();
     List<MenuLeft> listBody = new List();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_PRODUCT);
     ref.doc(DatabaseCollection.PRODUCTS).onSnapshot.forEach((element) {
       element.data().values.forEach((element) {
         listBody.add(MenuLeft(element, false));
-        print(listBody.length);
       });
     });
     onSuccess();
@@ -79,14 +82,17 @@ class MenuLeftPresenter {
   }
 
   addToWishList(CartItem bodyRight, CartPresenter cartPresenter){
+    onShowProgressDialog();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_WISH_LIST);
     var doc = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
     doc.doc(bodyRight.id).get().then((value) {
       if(value.exists){
+        onHideProgressDialog();
         cartPresenter.onAddToWishListExist(bodyRight.name + ' is existed in your list');
       }else{
         doc.doc(bodyRight.id).set(bodyRight.toJson()).whenComplete(() {
+          onHideProgressDialog();
           cartPresenter.onAddToWishListSuccess(bodyRight);
         });
       }
@@ -95,6 +101,7 @@ class MenuLeftPresenter {
   }
 
   addToCart(CartItem bodyRight, CartPresenter cartPresenter){
+    onShowProgressDialog();
     fs.Firestore store = firestore();
     fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_CART);
     var doc = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
@@ -104,10 +111,12 @@ class MenuLeftPresenter {
         var item = CartItem.fromJson(a);
         bodyRight.quantity = bodyRight.quantity + item.quantity;
         doc.doc(bodyRight.id).update(data: bodyRight.toJson()).whenComplete(() {
+          onHideProgressDialog();
           cartPresenter.onAddToCartSuccess(bodyRight);
         });
       }else{
         doc.doc(bodyRight.id).set(bodyRight.toJson()).whenComplete(() {
+          onHideProgressDialog();
           cartPresenter.onAddToCartSuccess(bodyRight);
         });
       }
@@ -117,6 +126,15 @@ class MenuLeftPresenter {
 
   onSuccess(){
     _view.onSuccess();
+    onHideProgressDialog();
+  }
+
+  onShowProgressDialog(){
+    _view.onShowProgressDialog();
+  }
+
+  onHideProgressDialog(){
+    _view.onHideProgressDialog();
   }
 
   goToDetail(BodyRight bodyRight) {
