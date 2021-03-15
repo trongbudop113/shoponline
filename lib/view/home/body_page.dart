@@ -68,7 +68,7 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
 
     return Container(
       margin: EdgeInsets.all(itemWidth * 0.02),
-      height: itemHeight * 1.25,
+      height: itemHeight * 0.75,
       width: itemWidthCus,
       child: Row(
         children: [
@@ -118,8 +118,8 @@ class _BodyPageState extends State<BodyPage> implements MenuLeftContract {
               )
           ),
           Container(
-            width: (itemWidthCus - (2 * (itemWidthCus * 0.08))) * 0.87,
-            padding: EdgeInsets.only(left: itemWidthCus * 0.02),
+            width: (itemWidthCus - (2 * (itemWidthCus * 0.08))) * (!Common.isPortrait(context) ? 1 : 0.92),
+            padding: EdgeInsets.only(left: itemWidthCus * 0.01),
             child: Stack(
               children: [
                 itemPos == 0 ?

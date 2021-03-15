@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_project/widget/text_widget.dart';
 
 class FavoritePage extends StatefulWidget {
   FavoritePage({Key key, this.title}) : super(key: key);
@@ -17,31 +19,170 @@ class _FavoritePageState extends State<FavoritePage> {
     var itemWidth = MediaQuery.of(context).size.width;
     var itemHeight = MediaQuery.of(context).size.height;
 
+    Widget yourWishList(){
+      return SliverToBoxAdapter(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+            child: textView('Danh sách yêu thích của bạn:', BLACK, 22, FontWeight.normal),
+          )
+      );
+    }
+
+    Widget totalPayment(){
+      return SliverToBoxAdapter(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+          alignment: Alignment.centerRight,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              textView('Thành tiền: ' + '100.000', BLACK, 20, FontWeight.normal),
+              textView('Giảm giá: ' + '20.000', BLACK, 20, FontWeight.normal),
+              textView('Tổng: ' + '80.000', BLACK, 20, FontWeight.normal),
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget paymentCart(){
+      return SliverToBoxAdapter(
+        child: GestureDetector(
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(itemWidth * 0.05),
+            color: BLACK,
+            height: 50,
+            child: textView('Thanh toán', WHITE, 20, FontWeight.normal),
+          ),
+          onTap: (){
+            setState(() {
+
+            });
+          },
+        ),
+      );
+    }
+
+    Widget spaceHeight(double space){
+      return SliverToBoxAdapter(
+        child: SizedBox(height: itemHeight * space),
+      );
+    }
+
+    Widget listCart(bool isPortrait){
+      return SliverPadding(
+          padding: isPortrait ? EdgeInsets.symmetric(horizontal: itemWidth * 0.05) : EdgeInsets.all(itemWidth * 0.05),
+          sliver: SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) =>
+                  Container(
+                    color: BLACK,
+                  ),
+                childCount: 5,
+              )
+          )
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: BLACK,
-      ),
-      body: Container(
-        width: itemWidth,
-        child: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                  color: Colors.pink[100]
+        backgroundColor: Colors.grey[200],
+        appBar: AppBar(
+          backgroundColor: BLACK,
+          automaticallyImplyLeading: false,
+          actions: [
+            InkWell(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Container(
+                width: 50,
+                height: 50,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.arrow_back, size: 30, color: WHITE),
+                ),
               ),
-              width: itemWidth * 0.7,
             ),
+            Spacer(flex: 1,),
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                color: Colors.greenAccent,
+              alignment: Alignment.center,
+              child: textViewCenter('WEARISM', WHITE, 28, FontWeight.bold),
+            ),
+            Spacer(flex: 1,),
+            InkWell(
+              onTap: (){
+
+              },
+              child: Container(
+                  width: 50,
+                  height: 50,
+                  child: Stack(
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        child: Icon(Icons.shopping_cart, size: 30, color: WHITE),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: textView('0', WHITE, 18, FontWeight.normal),
+                      )
+                    ],
+                  )
               ),
-              width: itemWidth * 0.3,
-            )
+            ),
+            SizedBox(width: 15)
           ],
         ),
-      ),
+        body: Container(
+          width: itemWidth,
+          child: !Common.isPortrait(context) ?
+          Container(
+            child: Row(
+              children: [
+                Container(
+                  width: itemWidth * 0.6,
+                  height: itemHeight,
+                  child: CustomScrollView(
+                    physics: BouncingScrollPhysics(),
+                    slivers: [
+                      spaceHeight(0.02),
+                      yourWishList(),
+                      spaceHeight(0.02),
+                      listCart(true),
+                      spaceHeight(0.02),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: itemWidth * 0.4,
+                  height: itemHeight,
+                  child: CustomScrollView(
+                    slivers: [
+                      spaceHeight(0.1),
+                      totalPayment(),
+                      spaceHeight(0.05),
+                      paymentCart(),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ) :
+          CustomScrollView(
+            physics: BouncingScrollPhysics(),
+            slivers: [
+              spaceHeight(0.02),
+              yourWishList(),
+              listCart(false),
+              spaceHeight(0.05),
+              totalPayment(),
+              paymentCart()
+            ],
+          ),
+        )
+
     );
   }
 }

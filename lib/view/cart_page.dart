@@ -76,9 +76,6 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
               ),
             ),
             focusedBorder : new OutlineInputBorder(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(30.0),
-              ),
               borderSide: BorderSide(
                 width: 1,
                 color: Colors.grey,

@@ -5,5 +5,8 @@ class PageImage {
   static const BG_SPLASH = "$IMAGE_PATH/bg_splash.png";
   static const IC_GOOGLE = "$IMAGE_PATH/google.png";
   static const IC_FACEBOOK = "$IMAGE_PATH/facebook.png";
-  static const IC_LOCK = "$IMAGE_PATH/ic_pass.png";
+  static const PIC_1 = "$IMAGE_PATH/hinh1.jpg";
+  static const PIC_2 = "$IMAGE_PATH/hinh2.jpg";
+  static const PIC_3 = "$IMAGE_PATH/hinh3.jpg";
+  static const PIC_4 = "$IMAGE_PATH/hinh4.jpg";
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/item_view/item_body_right.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/widget/text_widget.dart';
-
-import 'filter/item_filter.dart';
 
 class ContainBodyHome extends StatefulWidget {
   ContainBodyHome({Key key, this.width, this.height}) : super(key: key);
@@ -45,6 +44,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       child: Column(
         children: [
@@ -58,20 +58,20 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
             child: textView('View more', Colors.black, 12, FontWeight.bold),
           ),
           SizedBox(height: 20,),
+          // Container(
+          //   height: 45,
+          //   child:  ListView.builder(
+          //     itemCount: listSort.length,
+          //     scrollDirection: Axis.horizontal,
+          //     physics: BouncingScrollPhysics(),
+          //     itemBuilder: (context, i) {
+          //       return i == 0 ? ItemSortProduct(name: listSort[i]) : ItemFilterProduct(name: listSort[i]);
+          //     },
+          //   ),
+          // ),
           Container(
-            height: 45,
-            child:  ListView.builder(
-              itemCount: listSort.length,
-              scrollDirection: Axis.horizontal,
-              physics: BouncingScrollPhysics(),
-              itemBuilder: (context, i) {
-                return i == 0 ? ItemSortProduct(name: listSort[i]) : ItemFilterProduct(name: listSort[i]);
-              },
-            ),
-          ),
-          SizedBox(height: 20,),
-          Expanded(
-              child: FutureBuilder<List<BodyRight>>(
+            height: widget.height * 0.5,
+            child: FutureBuilder<List<BodyRight>>(
                 future: widget.postItem,
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
@@ -83,13 +83,13 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
                         return Text('No data found');
                       } else {
                         if (!snapshot.hasData) return Container();
-                        return GridView.count(
-                          crossAxisCount: !Common.isPortrait(context) ? 4 : 2,
-                          crossAxisSpacing: widget.height * 0.05,
-                          mainAxisSpacing: widget.width * 0.02,
-                          childAspectRatio: 9 / 12,
-                          physics: NeverScrollableScrollPhysics(),
-                          children: snapshot.data.map((int) => ItemBodyRight(item: int, menuLeftPresenter: widget.menuLeftPresenter,)).toList(),
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          physics: BouncingScrollPhysics(),
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return ItemBodyRight(item: snapshot.data[index], menuLeftPresenter: widget.menuLeftPresenter,);
+                          },
                         );
                       }
                   }

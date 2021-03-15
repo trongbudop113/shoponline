@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/presenter/home/cart_presenter.dart';
@@ -56,6 +57,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
   Widget build(BuildContext context) {
 
     var itemWidth = MediaQuery.of(context).size.width;
+    var itemWidthCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
     var itemHeight = MediaQuery.of(context).size.height;
 
     var widthTextDisCount = (itemWidth * 0.02) > 35 ? itemWidth * 0.02 : 35;
@@ -97,7 +99,9 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
         widget.menuLeftPresenter.goToDetail(widget.item);
       },
       child: Container(
-          child: CachedNetworkImage(
+        width: itemWidthCustom * 0.4,
+        margin: EdgeInsets.only(right: itemWidth * 0.02),
+        child: CachedNetworkImage(
             imageUrl: widget.item.image,
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
@@ -167,7 +171,14 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
               )
             ),
             placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            errorWidget: (context, url, error) {
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: BLACK),
+                ),
+                child: Icon(Icons.error),
+              );
+            }
           )
       ),
     );
