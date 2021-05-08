@@ -1,7 +1,18 @@
 class MenuLeft {
-  String category_name;
-  bool isSelected;
+  String id;
+  String name;
 
-  MenuLeft(this.category_name, this.isSelected);
+  MenuLeft();
 
+  MenuLeft.fromMap(Map<String, dynamic> data) {
+    id = data['id'];
+    name = data['name'];
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name
+    };
+  }
 }

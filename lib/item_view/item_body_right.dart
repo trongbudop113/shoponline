@@ -33,7 +33,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
 
   void onClickAddToCart(BodyRight item) {
     CartItem cart = new CartItem();
-    cart.quantity = _itemCount;
+    cart.quantity = 1;
     cart.id = item.id;
     cart.name = item.name;
     cart.image = item.image;
@@ -44,7 +44,7 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
 
   void onClickAddToWishList(BodyRight item) {
     CartItem cart = new CartItem();
-    cart.quantity = _itemCount;
+    cart.quantity = 1;
     cart.id = item.id;
     cart.name = item.name;
     cart.image = item.image;

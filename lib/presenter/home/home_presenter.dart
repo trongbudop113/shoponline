@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/model/body_right.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class HomeContract {
@@ -8,6 +8,8 @@ abstract class HomeContract {
   void goToLogin();
   void goToWishList();
   void goToPerson();
+  void goToDetail();
+  void showToastMessage(String message);
   void showMessageError(String message, BuildContext buildContext);
 }
 
@@ -16,8 +18,6 @@ class HomePresenter {
   HomeContract _view;
 
   HomePresenter(this._view);
-
-  var _firebaseAuth = FirebaseAuth.instance;
 
   goToCartDetail(BuildContext mContext) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,6 +47,14 @@ class HomePresenter {
     }else{
       _view.goToLogin();
     }
+  }
+
+  goToDetail() {
+    _view.goToDetail();
+  }
+
+  showToastMessage(String message){
+    _view.showToastMessage(message);
   }
 
   showMessageError(String message, BuildContext buildContext){

@@ -1,39 +1,44 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class BodyRight {
   String id;
   String name;
+  String category;
   String image;
-  String price;
   String discount;
-  bool isSelected;
+  String description;
+  String price;
+  List colors = [];
+  Timestamp createdAt;
+  Timestamp updatedAt;
 
-  BodyRight(
-      {
-        this.id,
-        this.name,
-        this.image,
-        this.price,
-        this.discount,
-        this.isSelected = false
-      }
-      );
+  BodyRight();
 
-  factory BodyRight.fromJson(Map<String, dynamic> json) {
-    return BodyRight(
-      id: json['id'],
-      name: json['name'],
-      image: json['image'],
-      price: json['price'],
-      discount: json['discount'],
-    );
+  BodyRight.fromMap(Map<String, dynamic> data) {
+    id = data['id'];
+    name = data['name'];
+    category = data['category'];
+    image = data['image'];
+    discount = data['discount'];
+    description = data['description'];
+    price = data['price'];
+    colors = data['colors'];
+    createdAt = data['createdAt'];
+    updatedAt = data['updatedAt'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['price'] = this.price;
-    data['discount'] = this.discount;
-    return data;
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'category': category,
+      'image': image,
+      'discount': discount,
+      'description': description,
+      'price': price,
+      'colors': colors,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt
+    };
   }
 }

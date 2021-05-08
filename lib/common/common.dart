@@ -9,6 +9,7 @@ class Common {
   static const String BASE_URL = "https://web_api";
 
   static const String LOGIN = "LOGIN";
+  static const String UUID = "UUID";
 
   static List<String> getListSort(){
     var listSort = ['Sort', 'Product Type', 'Style', 'Size', 'Colors'];

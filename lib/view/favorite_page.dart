@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/common/database_collection.dart';
+import 'package:flutter_project/model/favorite.dart';
+import 'package:flutter_project/presenter/favorite/favorite_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
@@ -11,7 +15,34 @@ class FavoritePage extends StatefulWidget {
   _FavoritePageState createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
+class _FavoritePageState extends State<FavoritePage> implements FavoriteContract {
+
+  FavoritePresenter favoritePresenter;
+  List<FavoriteItem> listFavoriteItem = new List();
+  var _firebaseAuth = FirebaseAuth.instance;
+
+  // Future<void> getListCart() async{
+  //   onShowProgressDialog();
+  //   Firestore store = firestore();
+  //   CollectionReference ref = store.collection(DatabaseCollection.ALL_WISH_LIST);
+  //   var document = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
+  //   document.onSnapshot.listen((querySnapshot) {
+  //     querySnapshot.docChanges().forEach((change) {
+  //       if (change.type == "added") {
+  //         Map<String, dynamic> a = change.doc.data();
+  //         var item = FavoriteItem.fromJson(a);
+  //         listFavoriteItem.add(item);
+  //       }
+  //     });
+  //   });
+  //   onGetDataSuccess();
+  // }
+
+  @override
+  void initState() {
+    favoritePresenter = new FavoritePresenter(this);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,5 +215,35 @@ class _FavoritePageState extends State<FavoritePage> {
         )
 
     );
+  }
+
+  @override
+  void onDeleteSuccess() {
+    // TODO: implement onDeleteSuccess
+  }
+
+  @override
+  void onGetDataSuccess() {
+    // TODO: implement onGetDataSuccess
+  }
+
+  @override
+  void onHideProgressDialog() {
+    // TODO: implement onHideProgressDialog
+  }
+
+  @override
+  void onShowProgressDialog() {
+    // TODO: implement onShowProgressDialog
+  }
+
+  @override
+  void onUpdateSuccess(FavoriteItem favoriteItem) {
+    // TODO: implement onUpdateSuccess
+  }
+
+  @override
+  void showMessageError(String message, BuildContext buildContext) {
+    // TODO: implement showMessageError
   }
 }

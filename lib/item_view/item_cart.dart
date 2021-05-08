@@ -45,8 +45,8 @@ class _ItemCartBody extends State<ItemCartBody>{
                   children: [
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: widget.itemWidth * 0.02),
-                      width: widget.itemWidth * 0.15,
-                      height: widget.itemWidth * 0.15,
+                      width: widget.itemWidth * 0.1,
+                      height: widget.itemWidth * 0.1,
                       child: customImageView(widget.cartItem.image),
                     ),
                     Spacer(flex: 1),
@@ -62,7 +62,7 @@ class _ItemCartBody extends State<ItemCartBody>{
                   children: [
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: widget.itemWidth * 0.02),
-                      child: textView(widget.cartItem.name, WHITE, 30, FontWeight.bold),
+                      child: textView(widget.cartItem.name, WHITE, 25, FontWeight.bold),
                     ),
                     Spacer(flex: 1,),
                     Container(
@@ -96,6 +96,9 @@ class _ItemCartBody extends State<ItemCartBody>{
                 ),
                 SizedBox(height: widget.itemHeight * 0.03),
                 GestureDetector(
+                  onTap: (){
+                    widget.shopCartPresenter.removeFromCart(widget.cartItem, context);
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,

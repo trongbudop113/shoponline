@@ -25,7 +25,7 @@ class _ItemMenuLeftState extends State<ItemMenuLeft> {
       child: !Common.isPortrait(context) ?
       Row(
         children: [
-          textView(widget.menu.category_name.toUpperCase(), WHITE, widget.width * 0.01, FontWeight.bold),
+          textView(widget.menu.name.toUpperCase(), WHITE, widget.width * 0.01, FontWeight.bold),
           Spacer(flex: 1,),
           Icon(Icons.home, color: WHITE,)
         ],
@@ -33,7 +33,7 @@ class _ItemMenuLeftState extends State<ItemMenuLeft> {
       Column(
         children: [
           Icon(Icons.home, color: WHITE,),
-          textView(widget.menu.category_name.toUpperCase(), WHITE, 6, FontWeight.bold),
+          textView(widget.menu.name.toUpperCase(), WHITE, 6, FontWeight.bold),
         ],
       ),
     );
@@ -60,7 +60,7 @@ class _ItemMenuLeftFocusState extends State<ItemMenuLeftFocus> {
       child: !Common.isPortrait(context) ?
       Row(
         children: [
-          textView(widget.menu.category_name.toUpperCase(), BLACK, widget.width * 0.01, FontWeight.bold),
+          textView(widget.menu.name.toUpperCase(), BLACK, widget.width * 0.01, FontWeight.bold),
           Spacer(flex: 1,),
           Icon(Icons.home, color: BLACK)
         ],
@@ -68,7 +68,7 @@ class _ItemMenuLeftFocusState extends State<ItemMenuLeftFocus> {
       Column(
         children: [
           Icon(Icons.home, color: BLACK),
-          textView(widget.menu.category_name.toUpperCase(), BLACK, 6, FontWeight.bold),
+          textView(widget.menu.name.toUpperCase(), BLACK, 6, FontWeight.bold),
         ],
       ),
     );

@@ -1,10 +1,8 @@
-import 'package:firebase/firebase.dart';
-import 'package:firebase/firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
-import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/item_view/item_cart.dart';
 import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/presenter/cart/shop_cart_presenter.dart';
@@ -29,28 +27,27 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
   List<CartItem> listCartItem = new List();
   var _firebaseAuth = FirebaseAuth.instance;
 
-  Future<void> getListCart() async{
-    onShowProgressDialog();
-    Firestore store = firestore();
-    CollectionReference ref = store.collection(DatabaseCollection.ALL_CART);
-    var document = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
-    document.onSnapshot.listen((querySnapshot) {
-      querySnapshot.docChanges().forEach((change) {
-        if (change.type == "added") {
-          Map<String, dynamic> a = change.doc.data();
-          var item = CartItem.fromJson(a);
-          print(item.name);
-          listCartItem.add(item);
-        }
-      });
-    });
-    onGetDataSuccess();
-  }
+  // Future<void> getListCart() async{
+  //   onShowProgressDialog();
+  //   Firestore store = firestore();
+  //   CollectionReference ref = store.collection(DatabaseCollection.ALL_CART);
+  //   var document = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
+  //   document.onSnapshot.listen((querySnapshot) {
+  //     querySnapshot.docChanges().forEach((change) {
+  //       if (change.type == "added") {
+  //         Map<String, dynamic> a = change.doc.data();
+  //         var item = CartItem.fromJson(a);
+  //         listCartItem.add(item);
+  //       }
+  //     });
+  //   });
+  //   onGetDataSuccess();
+  // }
 
   @override
   void initState() {
     shopCartPresenter = new ShopCartPresenter(this);
-    getListCart();
+    //getListCart();
     super.initState();
   }
 
@@ -150,7 +147,7 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
           ),
           onTap: (){
             setState(() {
-              getListCart();
+              //getListCart();
             });
           },
         ),
@@ -259,7 +256,10 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
   }
 
   @override
-  void onDeleteSuccess() {
-
+  void onDeleteSuccess(CartItem cartItem) {
+    Toast.show(cartItem.name + ' was removed from cart', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+    setState(() {
+      //getListCart();
+    });
   }
 }

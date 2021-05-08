@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,12 +6,14 @@ import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/hide_keyboard.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/model/user.dart';
+import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/presenter/login/checkout_presenter.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/values/image_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -382,8 +385,9 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   }
 
   @override
-  void loginSuccess(String userId, String type) {
-    checkoutPresenter.checkLogin(userId, type, context);
+  void loginSuccess(FirebaseUser firebaseUser, String type) {
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    checkoutPresenter.checkLogin(firebaseUser, type, context, authNotifier);
   }
 
   @override

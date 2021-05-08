@@ -1,9 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/api/body_right_api.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
+import 'package:flutter_project/notifier/auth_notifier.dart';
+import 'package:flutter_project/notifier/body_right_notifier.dart';
+import 'package:flutter_project/notifier/detail_item_notifier.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/image_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:provider/provider.dart';
 
 class ItemDetailPage extends StatefulWidget {
   ItemDetailPage({Key key, this.title}) : super(key: key);
@@ -16,6 +22,19 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
 
   bool _isShow = false;
+  BodyRightNotifier bodyRightNotifier;
+  AuthNotifier authNotifier;
+  DetailItemNotifier detailItemNotifier;
+
+  int _itemCount = 1;
+
+  @override
+  void initState() {
+    bodyRightNotifier = Provider.of<BodyRightNotifier>(context, listen: false);
+    authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    detailItemNotifier = Provider.of<DetailItemNotifier>(context, listen: false);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +112,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       padding: EdgeInsets.all(itemWidth * 0.05),
                       alignment: Alignment.center,
                       width: itemWidth * 0.6,
-                      child: textView('Giày Thể Thao XSPORT Prophere Rep', BLACK, 20, FontWeight.normal),
+                      child: textView('${bodyRightNotifier.currentProduct.name}', BLACK, 20, FontWeight.normal),
                     ),
                     Container(
                       padding: EdgeInsets.all(itemWidth * 0.05),
@@ -103,25 +122,39 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            alignment: Alignment.center,
-                            child: textView('-', WHITE, 18, FontWeight.normal),
-                            color: BLACK,
-                            width: 30,
-                            height: 30,
+                          GestureDetector(
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: textView('-', WHITE, 18, FontWeight.normal),
+                              color: BLACK,
+                              width: 30,
+                              height: 30,
+                            ),
+                            onTap: (){
+                              setState(() {
+                                _itemCount <= 1 ? _itemCount = 1 : _itemCount--;
+                              });
+                            },
                           ),
                           Container(
                             alignment: Alignment.center,
-                            child: textViewCenter('1', BLACK, 18, FontWeight.normal),
+                            child: textViewCenter('${_itemCount.toString()}', BLACK, 18, FontWeight.normal),
                             width: 40,
                             height: 30,
                           ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: textView('+', WHITE, 18, FontWeight.normal),
-                            color: BLACK,
-                            width: 30,
-                            height: 30,
+                          GestureDetector(
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: textView('+', WHITE, 18, FontWeight.normal),
+                              color: BLACK,
+                              width: 30,
+                              height: 30,
+                            ),
+                            onTap: (){
+                              setState(() {
+                                _itemCount++;
+                              });
+                            },
                           )
                         ],
                       ),
@@ -183,9 +216,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                   children: [
                     textView('Thông tin chi tiết', BLACK, 20, FontWeight.normal),
                     SizedBox(height: itemHeight * 0.01),
-                    textViewLine('Thật sự Adidas đã tạo ra một sản phẩm thú vị dành cho các sneakerhead trên toàn thế giới: không giới hạn, không giá trị, chỉ đơn giản là đẹp và chất lượng'+
-                      '\nBạn hoàn toàn có thể mang đôi giày cho bất kì hoạt động thường ngày nào: đi làm, đi học, đi bar và cả tập gym'+
-                      '\nĐế Chunky năng động, mạnh mẽ và hầm hố',
+                    textViewLine('${bodyRightNotifier.currentProduct.description.toString()}',
                         Colors.grey,
                         15,
                         FontWeight.normal,
@@ -207,7 +238,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               alignment: Alignment.center,
               height: 60,
               width: (itemWidth * 0.4) - 1,
-              child: textView('750,000 VND', WHITE, 20, FontWeight.normal),
+              child: textView('${bodyRightNotifier.currentProduct.price.toString()} VND', WHITE, 20, FontWeight.normal),
             ),
             Container(
               height: 60,
@@ -225,17 +256,26 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               height: 60,
               child: VerticalDivider(color: WHITE, width: 1),
             ),
-            Container(
-              alignment: Alignment.center,
-              height: 60,
-              width: (itemWidth * 0.4) - 1,
+            GestureDetector(
               child: Container(
-                child: textView('ADD TO CART', WHITE, 20, FontWeight.normal),
-              )
+                  alignment: Alignment.center,
+                  height: 60,
+                  width: (itemWidth * 0.4) - 1,
+                  child: Container(
+                    child: textView('ADD TO CART', WHITE, 20, FontWeight.normal),
+                  )
+              ),
+              onTap: (){
+                handleAddToCart();
+              },
             )
           ],
         ),
       )
     );
+  }
+
+  void handleAddToCart(){
+    addToCart(authNotifier, bodyRightNotifier, _itemCount);
   }
 }

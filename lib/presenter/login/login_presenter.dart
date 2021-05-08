@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login_web/flutter_facebook_login_web.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LoginContract {
-  void loginSuccess(String userId, String type);
+  void loginSuccess(FirebaseUser firebaseUser, String type);
   void backToHome();
   void goToRegister(String userId, String type);
   void onRegisterSuccess();
@@ -54,14 +54,18 @@ class LoginPresenter {
     _view.showMessageError(message, buildContext);
   }
 
-  onLoginSuccess(String userId, String type){
+  onLoginSuccess(FirebaseUser firebaseUser, String type){
     onHideProgressDialog();
-    _view.loginSuccess(userId, type);
+    _view.loginSuccess(firebaseUser, type);
   }
 
-  handleSignOut() async{
+  handleSignOut(AuthNotifier authNotifier) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await signOut().then((value) {
-      print(value);
+      authNotifier.user =  null;
+      authNotifier.count = 0;
+      prefs.setBool(Common.LOGIN, false);
+      prefs.remove(Common.UUID);
     });
   }
 
@@ -71,41 +75,43 @@ class LoginPresenter {
     }else{
       await facebookSignIn.logOut();
     }
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(Common.LOGIN, false);
     return 'User signed out';
   }
 
-  Future<String> signInWithGoogle() async {
-    await Firebase.initializeApp();
+  Future<FirebaseUser> signInWithGoogle() async {
+    //await Firebase.initializeApp();
 
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleSignInAuthentication.accessToken,
       idToken: googleSignInAuthentication.idToken,
     );
 
-    final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
-    final User user = userCredential.user;
+    var userCredential = await _firebaseAuth.signInWithCredential(credential);
+    final FirebaseUser user = userCredential.user;
 
     if (user != null) {
-      final User currentUser = _firebaseAuth.currentUser;
+      var currentUser = await _firebaseAuth.currentUser();
       assert(user.uid == currentUser.uid);
-      return user.uid;
+      return user;
     }
 
     return null;
   }
 
-  Future<String> loginWithFacebook() async {
+  Future<FirebaseUser> loginWithFacebook() async {
     final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
 
     if(result.status == FacebookLoginStatus.loggedIn){
       final FacebookAccessToken accessToken = result.accessToken;
+      final credential = FacebookAuthProvider.getCredential(
+        accessToken: result.accessToken.token,
+      );
+      final user = (await _firebaseAuth.signInWithCredential(credential)).user;
       facebookSignIn.testApi();
-      return accessToken.userId;
+      return user;
     }else if (result.status == FacebookLoginStatus.cancelledByUser){
       return null;
     }else if (result.status == FacebookLoginStatus.error){
@@ -117,15 +123,15 @@ class LoginPresenter {
 
   Future<void> registerWithEmailPassword(String email, String password, BuildContext mContext) async {
     onShowProgressDialog();
-    await Firebase.initializeApp();
+    //await Firebase.initializeApp();
 
     try{
-      final UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      var userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      final User user = userCredential.user;
+      final FirebaseUser user = userCredential.user;
       print(user.uid);
 
       if (user != null) {
@@ -134,8 +140,6 @@ class LoginPresenter {
 
         assert(!user.isAnonymous);
         assert(await user.getIdToken() != null);
-
-        onLoginSuccess(user.uid, 'email');
       }
     }catch(_){
       if(_ is PlatformException) {
@@ -154,15 +158,15 @@ class LoginPresenter {
 
   Future<void> loginWithEmailAndPassword(String email, String password, BuildContext mContext) async {
     onShowProgressDialog();
-    await Firebase.initializeApp();
+    //await Firebase.initializeApp();
 
     try{
-      final UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+      var userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      final User user = userCredential.user;
+      final FirebaseUser user = userCredential.user;
       print(user.uid);
 
       if (user != null) {
@@ -171,8 +175,7 @@ class LoginPresenter {
 
         assert(!user.isAnonymous);
         assert(await user.getIdToken() != null);
-
-        onLoginSuccess(user.uid, 'email');
+        onLoginSuccess(user, 'email');
       }
     }catch(_){
       if(_ is PlatformException) {

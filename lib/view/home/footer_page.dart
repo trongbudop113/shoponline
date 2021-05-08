@@ -22,7 +22,7 @@ class _FooterPageState extends State<FooterPage> {
     var itemWidth = !Common.isPortrait(context)? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeight = !Common.isPortrait(context)? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
 
-    var textSize20 = !Common.isPortrait(context)? itemWidth * 0.015 : 20;
+    var textSize20 = !Common.isPortrait(context)? itemWidth * 0.015 : 20.0;
 
     Widget fromUs(){
       return Container(

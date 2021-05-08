@@ -1,9 +1,11 @@
-import 'package:firebase/firebase.dart';
-import 'package:firebase/firestore.dart' as fs;
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/user.dart';
+import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,17 +15,16 @@ class CheckoutPresenter {
 
   CheckoutPresenter(this._view);
 
-  Future<void> checkLogin(String userId, String type, BuildContext mContext) async{
-
+  Future<void> checkLogin(FirebaseUser firebaseUser, String type, BuildContext mContext, AuthNotifier authNotifier) async{
     try{
-      fs.Firestore store = firestore();
-      fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_USER);
-      var document = ref.doc(userId);
-      document.get().then((value) {
+      var snapshot = Firestore.instance.collection(DatabaseCollection.ALL_USER).document(firebaseUser.uid);
+
+      snapshot.get().then((value) {
         if(value.exists){
-          backToHome();
+          authNotifier.user = firebaseUser;
+          backToHome(firebaseUser.uid);
         }else{
-          goToRegister(userId, type);
+          goToRegister(firebaseUser.uid, type);
         }
       });
     }catch(e){
@@ -33,18 +34,18 @@ class CheckoutPresenter {
 
   setUserData(UserData userData, BuildContext mContext){
     try{
-      fs.Firestore store = firestore();
-      fs.CollectionReference ref = store.collection(DatabaseCollection.ALL_USER);
-      var document = ref.doc(userData.id);
-      document.set(userData.toJson()).whenComplete(() => backToHome());
+      var snapshot = Firestore.instance.collection(DatabaseCollection.ALL_USER);
+      var document = snapshot.document(userData.id);
+      document.setData(userData.toJson()).whenComplete(() => backToHome(userData.id));
     }catch(e){
       showMessageError(e.toString(), mContext);
     }
   }
 
-  backToHome() async {
+  backToHome(String uuid) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(Common.LOGIN, true);
+    prefs.setString(Common.UUID, uuid);
     _view.backToHome();
   }
 

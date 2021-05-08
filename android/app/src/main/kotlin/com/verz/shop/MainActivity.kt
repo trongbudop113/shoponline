@@ -1,4 +1,4 @@
-package com.verz.flutter_project
+package com.verz.shop
 
 import io.flutter.embedding.android.FlutterActivity
 
