@@ -1,13 +1,16 @@
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/item_view/item_cart.dart';
 import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/presenter/cart/shop_cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_project/view/app_bar_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 
 class CartPage extends StatefulWidget {
@@ -24,31 +27,23 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
   var textSize = 22.0;
 
   ShopCartPresenter shopCartPresenter;
-  List<CartItem> listCartItem = new List();
-  var _firebaseAuth = FirebaseAuth.instance;
-
-  // Future<void> getListCart() async{
-  //   onShowProgressDialog();
-  //   Firestore store = firestore();
-  //   CollectionReference ref = store.collection(DatabaseCollection.ALL_CART);
-  //   var document = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
-  //   document.onSnapshot.listen((querySnapshot) {
-  //     querySnapshot.docChanges().forEach((change) {
-  //       if (change.type == "added") {
-  //         Map<String, dynamic> a = change.doc.data();
-  //         var item = CartItem.fromJson(a);
-  //         listCartItem.add(item);
-  //       }
-  //     });
-  //   });
-  //   onGetDataSuccess();
-  // }
+  double heightAppbar = 0.0;
 
   @override
   void initState() {
+    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    getListCartData(cartNotifier);
     shopCartPresenter = new ShopCartPresenter(this);
-    //getListCart();
+    loadHeightAppbar();
     super.initState();
+  }
+
+  void loadHeightAppbar(){
+    if (kIsWeb) {
+      heightAppbar = 60.0;
+    } else {
+      heightAppbar = 85.0;
+    }
   }
 
   @override
@@ -58,6 +53,8 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
     var itemHeight = MediaQuery.of(context).size.height;
     var itemWidthCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeightCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
+
+    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
 
     Widget _entryFieldText(TextEditingController textController, TextInputType inputType) {
       return TextField(
@@ -165,8 +162,8 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
         padding: isPortrait ? EdgeInsets.symmetric(horizontal: itemWidth * 0.05) : EdgeInsets.all(itemWidth * 0.05),
         sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) =>
-                ItemCartBody(itemHeight: itemHeightCustom, itemWidth: itemWidthCustom, cartItem: listCartItem[index], shopCartPresenter: shopCartPresenter),
-              childCount: listCartItem.length,
+                ItemCartBody(itemHeight: itemHeightCustom, itemWidth: itemWidthCustom, cartItem: cartNotifier.cartList[index], shopCartPresenter: shopCartPresenter),
+              childCount: cartNotifier.cartList.length,
             )
         )
       );
@@ -174,9 +171,7 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
 
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        backgroundColor: BLACK,
-      ),
+      appBar: AppBarNormal(heightAppbar: heightAppbar),
       body: Container(
         width: itemWidth,
         child: !Common.isPortrait(context) ?

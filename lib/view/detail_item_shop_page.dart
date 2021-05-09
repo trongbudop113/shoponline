@@ -1,15 +1,23 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_project/api/body_right_api.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
+import 'package:flutter_project/model/body_right.dart';
+import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
-import 'package:flutter_project/notifier/detail_item_notifier.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/presenter/app_bar_presenter.dart';
+import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_project/view/app_bar_page.dart';
+import 'package:flutter_project/view/cart_page.dart';
 import 'package:flutter_project/widget/image_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class ItemDetailPage extends StatefulWidget {
   ItemDetailPage({Key key, this.title}) : super(key: key);
@@ -19,21 +27,33 @@ class ItemDetailPage extends StatefulWidget {
   _ItemDetailPageState createState() => _ItemDetailPageState();
 }
 
-class _ItemDetailPageState extends State<ItemDetailPage> {
+class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract, AppbarContract {
 
   bool _isShow = false;
   BodyRightNotifier bodyRightNotifier;
   AuthNotifier authNotifier;
-  DetailItemNotifier detailItemNotifier;
+  CartPresenter cartPresenter;
+  AppbarPresenter appbarPresenter;
 
   int _itemCount = 1;
+  double heightAppbar = 0.0;
 
   @override
   void initState() {
+    cartPresenter = new CartPresenter(this);
+    appbarPresenter = new AppbarPresenter(this);
     bodyRightNotifier = Provider.of<BodyRightNotifier>(context, listen: false);
     authNotifier = Provider.of<AuthNotifier>(context, listen: false);
-    detailItemNotifier = Provider.of<DetailItemNotifier>(context, listen: false);
+    loadHeightAppbar();
     super.initState();
+  }
+
+  void loadHeightAppbar(){
+    if (kIsWeb) {
+      heightAppbar = 60.0;
+    } else {
+      heightAppbar = 85.0;
+    }
   }
 
   @override
@@ -41,57 +61,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
 
     var itemWidth = MediaQuery.of(context).size.width;
     var itemHeight = MediaQuery.of(context).size.height;
-    var sizeTextCustom = 28.0;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: BLACK,
-        automaticallyImplyLeading: false,
-        actions: [
-          InkWell(
-            onTap: (){
-              Navigator.pop(context);
-            },
-            child: Container(
-                width: 50,
-                height: 50,
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.arrow_back, size: 30, color: WHITE),
-                ),
-            ),
-          ),
-          Spacer(flex: 1,),
-          Container(
-            alignment: Alignment.center,
-            child: textViewCenter('WEARISM', WHITE, sizeTextCustom, FontWeight.bold),
-          ),
-          Spacer(flex: 1,),
-          InkWell(
-            onTap: (){
-
-            },
-            child: Container(
-                width: 50,
-                height: 50,
-                child: Stack(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      child: Icon(Icons.shopping_cart, size: 30, color: WHITE),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: textView('0', WHITE, 18, FontWeight.normal),
-                    )
-                  ],
-                )
-            ),
-          ),
-          SizedBox(width: 15)
-        ],
-      ),
+      appBar: AppBarCart(heightAppbar: heightAppbar, appbarPresenter: appbarPresenter),
       body: ModalProgressHUD(
         inAsyncCall: _isShow,
         child: CustomScrollView(
@@ -232,6 +204,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       ),
       bottomNavigationBar: Container(
         color: BLACK,
+        width: itemWidth,
         child: Row(
           children: [
             Container(
@@ -240,17 +213,23 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               width: (itemWidth * 0.4) - 1,
               child: textView('${bodyRightNotifier.currentProduct.price.toString()} VND', WHITE, 20, FontWeight.normal),
             ),
+            Spacer(flex: 1,),
             Container(
               height: 60,
               child: VerticalDivider(color: WHITE, width: 1),
             ),
-            Container(
-              alignment: Alignment.center,
-              height: 60,
-              width: itemWidth * 0.2,
+            GestureDetector(
               child: Container(
-                child: Icon(Icons.shopping_bag, color: WHITE, size: 30),
+                alignment: Alignment.center,
+                height: 60,
+                width: itemWidth * 0.2,
+                child: Container(
+                  child: Icon(Icons.favorite, color: WHITE, size: 30),
+                ),
               ),
+              onTap: (){
+                cartPresenter.checkLoginToAddToWishList();
+              },
             ),
             Container(
               height: 60,
@@ -258,15 +237,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             ),
             GestureDetector(
               child: Container(
-                  alignment: Alignment.center,
-                  height: 60,
-                  width: (itemWidth * 0.4) - 1,
-                  child: Container(
-                    child: textView('ADD TO CART', WHITE, 20, FontWeight.normal),
-                  )
+                alignment: Alignment.center,
+                height: 60,
+                width: itemWidth * 0.2,
+                child: Container(
+                  child: Icon(Icons.shopping_bag, color: WHITE, size: 30),
+                ),
               ),
               onTap: (){
-                handleAddToCart();
+                cartPresenter.checkLoginToAddToCart();
               },
             )
           ],
@@ -275,7 +254,49 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     );
   }
 
-  void handleAddToCart(){
-    addToCart(authNotifier, bodyRightNotifier, _itemCount);
+  @override
+  onAddToCartSuccess(CartItem bodyRight) {
+    setState(() {
+      _itemCount = 1;
+    });
+    Toast.show(bodyRight.name + ' added To Cart', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+  }
+
+  @override
+  onAddToWishListExist(String message) {
+    Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+  }
+
+  @override
+  onAddToWishListSuccess(BodyRight bodyRight) {
+    Toast.show(bodyRight.name + ' added To Wish List', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+  }
+
+  @override
+  void showDialogLogin(String message) {
+
+  }
+
+  @override
+  void actionAddToCart() {
+    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    addToCart(authNotifier, bodyRightNotifier, _itemCount, cartPresenter, cartNotifier);
+  }
+
+  @override
+  void actionAddToWishList() {
+    addToWishList(authNotifier, bodyRightNotifier, _itemCount, cartPresenter);
+  }
+
+  @override
+  void goToCartPage() {
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CartPage()
+    ));
+  }
+
+  @override
+  void showMessageError(String message, BuildContext buildContext) {
+    print('aaaaaaa');
   }
 }

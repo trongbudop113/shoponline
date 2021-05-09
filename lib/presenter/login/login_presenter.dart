@@ -11,7 +11,6 @@ abstract class LoginContract {
   void loginSuccess(FirebaseUser firebaseUser, String type);
   void backToHome();
   void goToRegister(String userId, String type);
-  void onRegisterSuccess();
   void onGoToRegister();
   void showMessageError(String message, BuildContext buildContext);
   void onShowProgressDialog();

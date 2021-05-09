@@ -2,18 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/hide_keyboard.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/model/user.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/presenter/login/checkout_presenter.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/values/image_page.dart';
+import 'package:flutter_project/view/app_bar_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -32,6 +36,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   String userId = '';
   String typeLogin = '';
   String gender = 'male';
+  double heightAppbar = 0.0;
 
   bool _isShow = false;
 
@@ -48,7 +53,16 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   void initState() {
     loginPresenter = new LoginPresenter(this);
     checkoutPresenter = new CheckoutPresenter(this);
+    loadHeightAppbar();
     super.initState();
+  }
+
+  void loadHeightAppbar(){
+    if (kIsWeb) {
+      heightAppbar = 60.0;
+    } else {
+      heightAppbar = 85.0;
+    }
   }
 
   Widget _entryFieldText(TextEditingController textController, bool isPass, TextInputType inputType, String hint) {
@@ -111,9 +125,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
     return GestureDetector(
       child: Scaffold(
           backgroundColor: Colors.grey[200],
-          appBar: AppBar(
-            backgroundColor: BLACK,
-          ),
+          appBar: AppBarNormal(heightAppbar: heightAppbar),
           body: Center(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -372,6 +384,9 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
 
   @override
   void backToHome() {
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    getCountCart(authNotifier, cartNotifier);
     Navigator.pop(context, 'reload');
   }
 
@@ -393,11 +408,6 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   @override
   void showMessageError(String message, BuildContext buildContext) {
     print(message);
-  }
-
-  @override
-  void onRegisterSuccess() {
-    Navigator.pop(context, 'reload');
   }
 
   @override

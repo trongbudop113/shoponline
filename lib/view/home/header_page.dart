@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
@@ -81,7 +82,8 @@ class _HeaderPageState extends State<HeaderPage> {
   @override
   void initState() {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
-    getCountCart(authNotifier);
+    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    getCountCart(authNotifier, cartNotifier);
     super.initState();
   }
 
@@ -99,8 +101,6 @@ class _HeaderPageState extends State<HeaderPage> {
     var itemWidth = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeight = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
     var sizeTextCustom = (itemHeight * 0.05) > 30 ? 30 : (itemHeight * 0.05);
-
-    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: itemWidth * 0.02),

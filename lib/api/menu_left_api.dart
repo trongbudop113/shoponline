@@ -1,17 +1,20 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/body_right.dart';
+import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/model/menu_left.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/notifier/menu_left_notifier.dart';
 import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:provider/provider.dart';
 
 getCategoryData(MenuLeftNotifier menuLeftNotifier) async {
   QuerySnapshot snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_CATEGORY).getDocuments();
@@ -26,15 +29,21 @@ getCategoryData(MenuLeftNotifier menuLeftNotifier) async {
   menuLeftNotifier.categoryList = _categoryList;
 }
 
-getCountCart(AuthNotifier authNotifier) async{
+getCountCart(AuthNotifier authNotifier, CartNotifier cartNotifier) async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool intValue = prefs.getBool(Common.LOGIN) ?? false;
   if(intValue){
     String uid = prefs.getString(Common.UUID) ?? '';
-    var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_CART).document(uid).collection(uid);
-    snapshot.snapshots().listen((querySnapshot) {
-      authNotifier.count = querySnapshot.documentChanges.length;
+    var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_CART).document(uid).collection(uid).getDocuments();
+    authNotifier.count = snapshot.documents.length;
+
+    List<CartItem> _listCart = [];
+
+    snapshot.documents.forEach((document) {
+      var item = CartItem.fromMap(document.data);
+      _listCart.add(item);
     });
+    cartNotifier.cartList = _listCart;
   }else{
     authNotifier.count = 0;
   }

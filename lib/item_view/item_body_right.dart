@@ -3,12 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/model/body_right.dart';
-import 'package:flutter_project/model/cart.dart';
-import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/presenter/home/menu_left_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
-import 'package:toast/toast.dart';
 
 class ItemBodyRight extends StatefulWidget {
   ItemBodyRight({Key key, this.item, this.menuLeftPresenter}) : super(key: key);
@@ -19,38 +16,11 @@ class ItemBodyRight extends StatefulWidget {
   _ItemBodyRightState createState() => _ItemBodyRightState();
 }
 
-class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  {
-
-  int _itemCount = 0;
-  CartPresenter cartPresenter;
-  bool isHover = false;
+class _ItemBodyRightState extends State<ItemBodyRight> {
 
   @override
   void initState() {
-    cartPresenter = new CartPresenter(this);
     super.initState();
-  }
-
-  void onClickAddToCart(BodyRight item) {
-    CartItem cart = new CartItem();
-    cart.quantity = 1;
-    cart.id = item.id;
-    cart.name = item.name;
-    cart.image = item.image;
-    cart.discount = item.discount;
-    cart.price = item.price;
-    widget.menuLeftPresenter.checkLoginToAddToCart(cart, cartPresenter);
-  }
-
-  void onClickAddToWishList(BodyRight item) {
-    CartItem cart = new CartItem();
-    cart.quantity = 1;
-    cart.id = item.id;
-    cart.name = item.name;
-    cart.image = item.image;
-    cart.discount = item.discount;
-    cart.price = item.price;
-    widget.menuLeftPresenter.checkLoginToAddToWishList(cart, cartPresenter);
   }
 
   @override
@@ -63,40 +33,10 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
     var widthTextDisCount = (itemWidth * 0.02) > 35 ? itemWidth * 0.02 : 35;
     var sizeTextDisCount = 10.0;
     var sizeTextName = (itemWidth * 0.01) > 14 ? itemWidth * 0.01 : 14;
-    var widthButton = (itemWidth * 0.05) > 50 ? (itemWidth * 0.05) : 50;
-    var sizeButton = (itemWidth * 0.02) > 20 ? (itemWidth * 0.02) : 20;
-
-    Widget itemButton(IconData icon, int type){
-      return InkWell(
-        child: Container(
-          width: widthButton,
-          height: widthButton,
-          color: BLACK,
-          child: Icon(icon, color: WHITE, size: sizeButton),
-        ),
-        onTap: (){
-          switch(type){
-            case 1 : {
-              onClickAddToCart(widget.item);
-              break;
-            }
-            case 0 : {
-              onClickAddToWishList(widget.item);
-              break;
-            }
-          }
-        },
-      );
-    }
 
     return InkWell(
-      onHover: (value){
-        setState(() {
-          isHover = value;
-        });
-      },
       onTap: (){
-        widget.menuLeftPresenter.goToDetail(widget.item);
+        widget.menuLeftPresenter.goToDetail();
       },
       child: Container(
         width: itemWidthCustom * 0.4,
@@ -147,26 +87,6 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
                       ),
                     ),
                   ),
-                  isHover ?
-                  Container(
-                    color: Color.fromRGBO(0, 0, 0, 80),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            itemButton(Icons.favorite, 0),
-                            SizedBox(width: 5,),
-                            itemButton(Icons.add_shopping_cart, 1)
-                          ],
-                        ),
-                      ],
-                    )
-                  ) :
-                  Container(),
                 ],
               )
             ),
@@ -182,25 +102,5 @@ class _ItemBodyRightState extends State<ItemBodyRight> implements CartContract  
           )
       ),
     );
-  }
-
-  @override
-  void onAddToCartSuccess(CartItem bodyRight) {
-    setState(() {
-      _itemCount = 0;
-    });
-    final snackBar = SnackBar(content: Text(bodyRight.name + ' added To Cart'), duration: Duration(seconds: 1));
-    Scaffold.of(context).showSnackBar(snackBar);
-  }
-
-  @override
-  void onAddToWishListExist(String message) {
-    Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
-  }
-
-  @override
-  void onAddToWishListSuccess(CartItem bodyRight) {
-    final snackBar = SnackBar(content: Text(bodyRight.name + ' added To Wish List'), duration: Duration(seconds: 1));
-    Scaffold.of(context).showSnackBar(snackBar);
   }
 }

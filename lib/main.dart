@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
-import 'package:flutter_project/notifier/detail_item_notifier.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/notifier/menu_left_notifier.dart';
-import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/view/home/home_page.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +26,7 @@ void main() {
         create: (context) => AuthNotifier(),
       ),
       ChangeNotifierProvider(
-        create: (context) => DetailItemNotifier(),
+        create: (context) => CartNotifier(),
       ),
     ],
     child: MyApp(),
