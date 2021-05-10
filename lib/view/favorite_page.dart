@@ -1,10 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
-import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/favorite.dart';
+import 'package:flutter_project/presenter/app_bar_presenter.dart';
 import 'package:flutter_project/presenter/favorite/favorite_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_project/view/app_bar_page.dart';
+import 'package:flutter_project/view/cart_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 
 class FavoritePage extends StatefulWidget {
@@ -15,33 +17,26 @@ class FavoritePage extends StatefulWidget {
   _FavoritePageState createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> implements FavoriteContract {
+class _FavoritePageState extends State<FavoritePage> implements FavoriteContract, AppbarContract {
 
   FavoritePresenter favoritePresenter;
-  List<FavoriteItem> listFavoriteItem = new List();
-  var _firebaseAuth = FirebaseAuth.instance;
-
-  // Future<void> getListCart() async{
-  //   onShowProgressDialog();
-  //   Firestore store = firestore();
-  //   CollectionReference ref = store.collection(DatabaseCollection.ALL_WISH_LIST);
-  //   var document = ref.doc(_firebaseAuth.currentUser.uid).collection(_firebaseAuth.currentUser.uid);
-  //   document.onSnapshot.listen((querySnapshot) {
-  //     querySnapshot.docChanges().forEach((change) {
-  //       if (change.type == "added") {
-  //         Map<String, dynamic> a = change.doc.data();
-  //         var item = FavoriteItem.fromJson(a);
-  //         listFavoriteItem.add(item);
-  //       }
-  //     });
-  //   });
-  //   onGetDataSuccess();
-  // }
+  AppbarPresenter appbarPresenter;
+  double heightAppbar = 0.0;
 
   @override
   void initState() {
     favoritePresenter = new FavoritePresenter(this);
+    appbarPresenter = new AppbarPresenter(this);
+    loadHeightAppbar();
     super.initState();
+  }
+
+  void loadHeightAppbar(){
+    if (kIsWeb) {
+      heightAppbar = 60.0;
+    } else {
+      heightAppbar = 85.0;
+    }
   }
 
   @override
@@ -59,42 +54,6 @@ class _FavoritePageState extends State<FavoritePage> implements FavoriteContract
       );
     }
 
-    Widget totalPayment(){
-      return SliverToBoxAdapter(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-          alignment: Alignment.centerRight,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              textView('Thành tiền: ' + '100.000', BLACK, 20, FontWeight.normal),
-              textView('Giảm giá: ' + '20.000', BLACK, 20, FontWeight.normal),
-              textView('Tổng: ' + '80.000', BLACK, 20, FontWeight.normal),
-            ],
-          ),
-        ),
-      );
-    }
-
-    Widget paymentCart(){
-      return SliverToBoxAdapter(
-        child: GestureDetector(
-          child: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.all(itemWidth * 0.05),
-            color: BLACK,
-            height: 50,
-            child: textView('Thanh toán', WHITE, 20, FontWeight.normal),
-          ),
-          onTap: (){
-            setState(() {
-
-            });
-          },
-        ),
-      );
-    }
 
     Widget spaceHeight(double space){
       return SliverToBoxAdapter(
@@ -118,54 +77,7 @@ class _FavoritePageState extends State<FavoritePage> implements FavoriteContract
 
     return Scaffold(
         backgroundColor: Colors.grey[200],
-        appBar: AppBar(
-          backgroundColor: BLACK,
-          automaticallyImplyLeading: false,
-          actions: [
-            InkWell(
-              onTap: (){
-                Navigator.pop(context);
-              },
-              child: Container(
-                width: 50,
-                height: 50,
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.arrow_back, size: 30, color: WHITE),
-                ),
-              ),
-            ),
-            Spacer(flex: 1,),
-            Container(
-              alignment: Alignment.center,
-              child: textViewCenter('WEARISM', WHITE, 28, FontWeight.bold),
-            ),
-            Spacer(flex: 1,),
-            InkWell(
-              onTap: (){
-
-              },
-              child: Container(
-                  width: 50,
-                  height: 50,
-                  child: Stack(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        child: Icon(Icons.shopping_cart, size: 30, color: WHITE),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: textView('0', WHITE, 18, FontWeight.normal),
-                      )
-                    ],
-                  )
-              ),
-            ),
-            SizedBox(width: 15)
-          ],
-        ),
+        appBar: AppBarCart(heightAppbar: heightAppbar, appbarPresenter: appbarPresenter),
         body: Container(
           width: itemWidth,
           child: !Common.isPortrait(context) ?
@@ -192,9 +104,6 @@ class _FavoritePageState extends State<FavoritePage> implements FavoriteContract
                   child: CustomScrollView(
                     slivers: [
                       spaceHeight(0.1),
-                      totalPayment(),
-                      spaceHeight(0.05),
-                      paymentCart(),
                     ],
                   ),
                 )
@@ -208,8 +117,6 @@ class _FavoritePageState extends State<FavoritePage> implements FavoriteContract
               yourWishList(),
               listCart(false),
               spaceHeight(0.05),
-              totalPayment(),
-              paymentCart()
             ],
           ),
         )
@@ -245,5 +152,17 @@ class _FavoritePageState extends State<FavoritePage> implements FavoriteContract
   @override
   void showMessageError(String message, BuildContext buildContext) {
     // TODO: implement showMessageError
+  }
+
+  @override
+  void goToCartPage() {
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CartPage()
+    ));
+  }
+
+  @override
+  void showDialogLogin(String message) {
+
   }
 }

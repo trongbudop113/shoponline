@@ -1,11 +1,11 @@
 {
-    "name": "flutter_project",
-    "short_name": "flutter_project",
+    "name": "Wearism",
+    "short_name": "Wearism",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Flutter core",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "description": "Online shop",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

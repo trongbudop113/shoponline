@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
-import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/notifier/menu_left_notifier.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
@@ -18,6 +16,7 @@ import 'package:flutter_project/view/home/body_right_home.dart';
 import 'package:flutter_project/view/home/footer_page.dart';
 import 'package:flutter_project/view/home/header_page.dart';
 import 'package:flutter_project/view/login_page.dart';
+import 'package:flutter_project/view/profile_page.dart';
 import 'package:flutter_project/widget/dialog_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:provider/provider.dart';
@@ -183,7 +182,9 @@ class _HomePageState extends State<HomePage> implements HomeContract {
 
   @override
   void goToPerson() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => ProfilePage()
+    ));
   }
 
   @override

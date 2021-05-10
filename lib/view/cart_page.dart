@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_project/api/cart_api.dart';
+import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/item_view/item_cart.dart';
 import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/presenter/cart/shop_cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
@@ -28,10 +30,11 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
 
   ShopCartPresenter shopCartPresenter;
   double heightAppbar = 0.0;
+  CartNotifier cartNotifier;
 
   @override
   void initState() {
-    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    cartNotifier = Provider.of<CartNotifier>(context, listen: false);
     getListCartData(cartNotifier);
     shopCartPresenter = new ShopCartPresenter(this);
     loadHeightAppbar();
@@ -53,8 +56,6 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
     var itemHeight = MediaQuery.of(context).size.height;
     var itemWidthCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeightCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
-
-    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
 
     Widget _entryFieldText(TextEditingController textController, TextInputType inputType) {
       return TextField(
@@ -162,8 +163,14 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
         padding: isPortrait ? EdgeInsets.symmetric(horizontal: itemWidth * 0.05) : EdgeInsets.all(itemWidth * 0.05),
         sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) =>
-                ItemCartBody(itemHeight: itemHeightCustom, itemWidth: itemWidthCustom, cartItem: cartNotifier.cartList[index], shopCartPresenter: shopCartPresenter),
-              childCount: cartNotifier.cartList.length,
+                ItemCartBody(
+                    itemHeight: itemHeightCustom,
+                    itemWidth: itemWidthCustom,
+                    cartItem: context.watch<CartNotifier>().cartList[index],
+                    shopCartPresenter: shopCartPresenter,
+                    index: index,
+                ),
+              childCount: context.watch<CartNotifier>().cartList.length,
             )
         )
       );
@@ -226,11 +233,6 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
   }
 
   @override
-  void onGetDataSuccess() {
-    // TODO: implement onGetDataSuccess
-  }
-
-  @override
   void onHideProgressDialog() {
     // TODO: implement onHideProgressDialog
   }
@@ -251,10 +253,14 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
   }
 
   @override
-  void onDeleteSuccess(CartItem cartItem) {
+  void onDeleteSuccess(CartItem cartItem, int index) {
+    //cartNotifier.cartList.removeAt(index);
     Toast.show(cartItem.name + ' was removed from cart', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
-    setState(() {
-      //getListCart();
-    });
+  }
+
+  @override
+  void onRemoveItemCart(CartItem cartItem, int index) {
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    removeItemCart(cartItem, cartNotifier, shopCartPresenter, index, context, authNotifier);
   }
 }

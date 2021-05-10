@@ -7,9 +7,9 @@ abstract class ShopCartContract {
   void showMessageError(String message, BuildContext buildContext);
   void onShowProgressDialog();
   void onHideProgressDialog();
-  void onGetDataSuccess();
+  void onRemoveItemCart(CartItem cartItem, int index);
   void onUpdateSuccess(CartItem cartItem);
-  void onDeleteSuccess(CartItem cartItem);
+  void onDeleteSuccess(CartItem cartItem, int index);
 }
 
 class ShopCartPresenter {
@@ -27,28 +27,17 @@ class ShopCartPresenter {
     return listBody;
   }
 
-  Future<void> updateQuantityCart(int countItem, CartItem cartItem, BuildContext context) async {
-    onShowProgressDialog();
-
-  }
-
-  Future<void> removeFromCart(CartItem cartItem, BuildContext context) async {
-    onShowProgressDialog();
-
+  removeFromCart(CartItem cartItem, int index) async {
+    _view.onRemoveItemCart(cartItem, index);
   }
 
   onUpdateSuccess(CartItem cartItem){
     _view.onUpdateSuccess(cartItem);
   }
 
-  onDeleteSuccess(CartItem cartItem){
+  onDeleteSuccess(CartItem cartItem, int index){
     onHideProgressDialog();
-    _view.onDeleteSuccess(cartItem);
-  }
-
-  onGetDataSuccess(){
-    onHideProgressDialog();
-    _view.onGetDataSuccess();
+    _view.onDeleteSuccess(cartItem, index);
   }
 
   onShowProgressDialog(){

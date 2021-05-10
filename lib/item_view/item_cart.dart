@@ -1,18 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/presenter/cart/shop_cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/image_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:provider/provider.dart';
 
 class ItemCartBody extends StatefulWidget{
 
   final double itemWidth;
   final double itemHeight;
   final CartItem cartItem;
+  final int index;
   final ShopCartPresenter shopCartPresenter;
-  ItemCartBody({Key key, this.itemWidth, this.itemHeight, this.cartItem, this.shopCartPresenter}) : super(key: key);
+  ItemCartBody({Key key, this.itemWidth, this.itemHeight, this.cartItem, this.shopCartPresenter, this.index}) : super(key: key);
 
   @override
   _ItemCartBody createState() => _ItemCartBody();
@@ -22,12 +26,11 @@ class ItemCartBody extends StatefulWidget{
 class _ItemCartBody extends State<ItemCartBody>{
 
   var textSize = 22.0;
-  var _itemCount = 0;
+  //var _itemCount = 0;
 
   @override
   void initState() {
     super.initState();
-    _itemCount = widget.cartItem.quantity;
   }
 
   @override
@@ -72,21 +75,21 @@ class _ItemCartBody extends State<ItemCartBody>{
                             child: textView('-', WHITE, textSize, FontWeight.normal),
                             onTap: (){
                               setState(() {
-                                _itemCount <= 1 ? 1 : _itemCount--;
+                                widget.cartItem.quantity <= 1 ? 1 : widget.cartItem.quantity--;
                               });
-                              updateQuantityCart(_itemCount);
+                              handleUpdateQuantityCart();
                             },
                           ),
                           SizedBox(width: 12,),
-                          textViewCenter(_itemCount.toString(), WHITE, textSize, FontWeight.bold),
+                          textViewCenter(widget.cartItem.quantity.toString(), WHITE, textSize, FontWeight.bold),
                           SizedBox(width: 12,),
                           GestureDetector(
                             child: textView('+', WHITE, textSize, FontWeight.normal),
                             onTap: (){
                               setState(() {
-                                _itemCount++;
+                                widget.cartItem.quantity++;
                               });
-                              updateQuantityCart(_itemCount);
+                              handleUpdateQuantityCart();
                             },
                           )
                         ],
@@ -97,7 +100,7 @@ class _ItemCartBody extends State<ItemCartBody>{
                 SizedBox(height: widget.itemHeight * 0.03),
                 GestureDetector(
                   onTap: (){
-                    widget.shopCartPresenter.removeFromCart(widget.cartItem, context);
+                    widget.shopCartPresenter.removeFromCart(widget.cartItem, widget.index);
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -121,7 +124,10 @@ class _ItemCartBody extends State<ItemCartBody>{
     );
   }
 
-  void updateQuantityCart(int itemCount){
-    widget.shopCartPresenter.updateQuantityCart(itemCount, widget.cartItem, context);
+  void handleUpdateQuantityCart(){
+    CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    Future.delayed(Duration(milliseconds: 1000), (){
+      updateQuantityCart(widget.cartItem, widget.cartItem.quantity, cartNotifier, widget.shopCartPresenter);
+    });
   }
 }

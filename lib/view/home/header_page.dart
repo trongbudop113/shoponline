@@ -127,7 +127,7 @@ class _HeaderPageState extends State<HeaderPage> {
           SizedBox(width: 20,),
           InkWell(
             onTap: (){
-
+              widget.homePresenter.goToPersonInformation(context);
             },
             focusColor: Colors.grey,
             hoverColor: Colors.grey,
