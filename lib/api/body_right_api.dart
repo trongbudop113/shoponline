@@ -1,5 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,7 +44,7 @@ addToCart(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int co
 
 }
 
-addToWishList(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int count, CartPresenter cartPresenter) async{
+addToWishList(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int count, CartPresenter cartPresenter, FavoriteNotifier favoriteNotifier) async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String uid = prefs.getString(Common.UUID) ?? '';
   var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_WISH_LIST).document(uid).collection(uid);
@@ -54,6 +56,7 @@ addToWishList(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, in
     }else{
       snapshot.document(bodyRightNotifier.currentProduct.id).setData(bodyRightNotifier.currentProduct.toMap()).whenComplete(() {
         cartPresenter.onAddToWishListSuccess(bodyRightNotifier.currentProduct);
+        getListFavoriteData(favoriteNotifier);
       });
     }
   });

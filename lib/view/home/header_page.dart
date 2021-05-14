@@ -3,10 +3,12 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
@@ -83,7 +85,9 @@ class _HeaderPageState extends State<HeaderPage> {
   void initState() {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    FavoriteNotifier favoriteNotifier = Provider.of<FavoriteNotifier>(context, listen: false);
     getCountCart(authNotifier, cartNotifier);
+    getListFavoriteData(favoriteNotifier);
     super.initState();
   }
 

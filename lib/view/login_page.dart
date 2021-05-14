@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/hide_keyboard.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/model/user.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/presenter/login/checkout_presenter.dart';
 import 'package:flutter_project/presenter/login/login_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
@@ -41,8 +43,12 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   bool _isShow = false;
 
   TextEditingController phoneTextController = TextEditingController();
+  TextEditingController birthDayTextController = TextEditingController();
   TextEditingController nameTextController = TextEditingController();
-  TextEditingController addressTextController = TextEditingController();
+  TextEditingController streetTextController = TextEditingController();
+  TextEditingController villageTextController = TextEditingController();
+  TextEditingController wardTextController = TextEditingController();
+  TextEditingController cityTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
 
@@ -134,7 +140,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                 !Common.isPortrait(context) ? Container(
                   height: itemHeight * 0.85,
                   width: itemWidth * 0.5,
-                  child: FlutterLogo(),
+                  child: Image.asset(PageImage.LOGO_BLACK),
                 ) : Container(),
                 !Common.isPortrait(context) ? Spacer(flex: 1,) : Container(),
                 isGoToRegister ?
@@ -176,24 +182,24 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                               children: [
                                 SizedBox(height: itemHeight * 0.1),
                                 Container(
-                                  child: FlutterLogo(),
-                                  width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
-                                  height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                  child: Image.asset(PageImage.LOGO_WHITE),
+                                  width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.32),
+                                  height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.32),
                                 ),
                                 SizedBox(height: itemHeight * 0.03,),
                                 Container(
                                   margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                                  child: _entryFieldText(nameTextController, false, TextInputType.text, 'Enter your name'),
+                                  child: _entryFieldText(nameTextController, false, TextInputType.text, 'Nhập tên đầy đủ của bạn'),
                                 ),
                                 SizedBox(height: 20,),
                                 Container(
                                   margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                                  child: _entryFieldText(phoneTextController, false, TextInputType.phone, 'Enter your phone number'),
+                                  child: _entryFieldText(phoneTextController, false, TextInputType.phone, 'Nhập số điện thoại của bạn'),
                                 ),
                                 SizedBox(height: 20,),
                                 Container(
                                   margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                                  child: _entryFieldText(addressTextController, false, TextInputType.streetAddress, 'Enter your address'),
+                                  child: _entryFieldText(birthDayTextController, false, TextInputType.phone, 'Nhập ngày sinh của bạn'),
                                 ),
                                 SizedBox(height: itemHeight * 0.03,),
                                 Container(
@@ -202,6 +208,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                     children: [
                                       new Radio(
                                         value: 0,
+                                        activeColor: WHITE,
                                         groupValue: _radioValue,
                                         onChanged: _handleRadioValueChange,
                                       ),
@@ -210,6 +217,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                       new Radio(
                                         value: 1,
                                         groupValue: _radioValue,
+                                        activeColor: WHITE,
                                         onChanged: _handleRadioValueChange,
                                       ),
                                       textView('Female', WHITE, 14, FontWeight.normal),
@@ -217,20 +225,53 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                       new Radio(
                                         value: 2,
                                         groupValue: _radioValue,
+                                        activeColor: WHITE,
                                         onChanged: _handleRadioValueChange,
                                       ),
                                       textView('Other', WHITE, 14, FontWeight.normal),
                                     ],
                                   ),
                                 ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(left: itemWidth * 0.05),
+                                      width: itemWidth * 0.3,
+                                      child: _entryFieldText(streetTextController, false, TextInputType.streetAddress, 'Số nhà, tên đường'),
+                                    ),
+                                    SizedBox(width: 20),
+                                    Container(
+                                      margin: EdgeInsets.only(right: itemWidth * 0.05),
+                                      width: itemWidth * 0.35,
+                                      child: _entryFieldText(villageTextController, false, TextInputType.streetAddress, 'Phường/Xã'),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(left: itemWidth * 0.05),
+                                      width: itemWidth * 0.3,
+                                      child: _entryFieldText(wardTextController, false, TextInputType.streetAddress, 'Quận/Huyện'),
+                                    ),
+                                    SizedBox(width: 20),
+                                    Container(
+                                      margin: EdgeInsets.only(right: itemWidth * 0.05),
+                                      width: itemWidth * 0.35,
+                                      child: _entryFieldText(cityTextController, false, TextInputType.streetAddress, 'Tỉnh/Thành Phố'),
+                                    ),
+                                  ],
+                                ),
                                 SizedBox(height: itemHeight * 0.05),
                                 InkWell(
                                   child: Container(
                                     alignment: Alignment.center,
                                     width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
-                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                    padding: EdgeInsets.symmetric(vertical: 15),
                                     color: WHITE,
-                                    child: textView('Login', BLACK, 15, FontWeight.normal),
+                                    child: textView('Login', BLACK, 16, FontWeight.normal),
                                   ),
                                   onTap: (){
                                     setUserData();
@@ -266,9 +307,9 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                   children: [
                                     SizedBox(height: itemHeight * 0.1),
                                     Container(
-                                      child: FlutterLogo(),
-                                      width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
-                                      height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.35),
+                                      child: Image.asset(PageImage.LOGO_WHITE),
+                                      width: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.32),
+                                      height: itemWidth * (!Common.isPortrait(context) ? 0.1 : 0.32),
                                     ),
                                     SizedBox(height: itemHeight * 0.05,),
                                     Container(
@@ -376,7 +417,8 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
     userData.gender = this.gender;
     userData.image = '';
     userData.phone = phoneTextController.value.text;
-    userData.address = addressTextController.value.text;
+    userData.birthDay = birthDayTextController.value.text;
+    userData.address = '${streetTextController.text}, ${villageTextController.text}, ${wardTextController.text}, ${cityTextController.text}';
     userData.name = nameTextController.value.text;
     userData.loginBy = this.typeLogin;
     checkoutPresenter.setUserData(userData, context);
@@ -386,7 +428,10 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   void backToHome() {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     CartNotifier cartNotifier = Provider.of<CartNotifier>(context, listen: false);
+    FavoriteNotifier favoriteNotifier = Provider.of<FavoriteNotifier>(context, listen: false);
     getCountCart(authNotifier, cartNotifier);
+    getListFavoriteData(favoriteNotifier);
+
     Navigator.pop(context, 'reload');
   }
 

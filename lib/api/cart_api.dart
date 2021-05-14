@@ -4,8 +4,10 @@ import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/model/favorite.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/presenter/cart/shop_cart_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,20 @@ getListCartData(CartNotifier cartNotifier) async{
     _listCart.add(item);
   });
   cartNotifier.cartList = _listCart;
+}
+
+getListFavoriteData(FavoriteNotifier favoriteNotifier) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String uid = prefs.getString(Common.UUID) ?? '';
+  var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_WISH_LIST).document(uid).collection(uid).getDocuments();
+
+  List<FavoriteItem> _listFavorite = [];
+  favoriteNotifier.favoriteCount = snapshot.documents.length;
+  snapshot.documents.forEach((document) {
+    var item = FavoriteItem.fromMap(document.data);
+    _listFavorite.add(item);
+  });
+  favoriteNotifier.favoriteList = _listFavorite;
 }
 
 updateQuantityCart(CartItem cartItem, int count, CartNotifier cartNotifier, ShopCartPresenter shopCartPresenter) async {

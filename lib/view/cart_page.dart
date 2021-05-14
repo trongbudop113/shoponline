@@ -254,7 +254,6 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
 
   @override
   void onDeleteSuccess(CartItem cartItem, int index) {
-    //cartNotifier.cartList.removeAt(index);
     Toast.show(cartItem.name + ' was removed from cart', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
   }
 

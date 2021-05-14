@@ -8,6 +8,7 @@ import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/presenter/app_bar_presenter.dart';
 import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
@@ -285,7 +286,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
 
   @override
   void actionAddToWishList() {
-    addToWishList(authNotifier, bodyRightNotifier, _itemCount, cartPresenter);
+    FavoriteNotifier favoriteNotifier = Provider.of<FavoriteNotifier>(context, listen: false);
+    addToWishList(authNotifier, bodyRightNotifier, _itemCount, cartPresenter, favoriteNotifier);
   }
 
   @override

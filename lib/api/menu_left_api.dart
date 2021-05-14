@@ -7,6 +7,7 @@ import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/model/menu_left.dart';
+import 'package:flutter_project/model/user.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
@@ -29,13 +30,27 @@ getCategoryData(MenuLeftNotifier menuLeftNotifier) async {
   menuLeftNotifier.categoryList = _categoryList;
 }
 
+getUserData(AuthNotifier authNotifier) async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool intValue = prefs.getBool(Common.LOGIN) ?? false;
+  if(intValue){
+    String uid = prefs.getString(Common.UUID) ?? '';
+    var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_USER).document(uid).get();
+    authNotifier.userData = UserData.fromMap(snapshot.data);
+  }else{
+    authNotifier.count = 0;
+  }
+}
+
 getCountCart(AuthNotifier authNotifier, CartNotifier cartNotifier) async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool intValue = prefs.getBool(Common.LOGIN) ?? false;
   if(intValue){
     String uid = prefs.getString(Common.UUID) ?? '';
     var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_CART).document(uid).collection(uid).getDocuments();
+    var snapshotUser = await Firestore.instance.collection(DatabaseCollection.ALL_USER).document(uid).get();
     authNotifier.count = snapshot.documents.length;
+    authNotifier.userData = UserData.fromMap(snapshotUser.data);
 
     List<CartItem> _listCart = [];
 
@@ -44,8 +59,6 @@ getCountCart(AuthNotifier authNotifier, CartNotifier cartNotifier) async{
       _listCart.add(item);
     });
     cartNotifier.cartList = _listCart;
-  }else{
-    authNotifier.count = 0;
   }
 }
 

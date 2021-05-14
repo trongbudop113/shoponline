@@ -28,6 +28,16 @@ class FavoriteItem {
     );
   }
 
+  FavoriteItem.fromMap(Map<String, dynamic> data) {
+    id = data['id'];
+    name = data['name'];
+    image = data['image'];
+    discount = data['discount'];
+    price = data['price'];
+    quantity = data['quantity'];
+  }
+
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;

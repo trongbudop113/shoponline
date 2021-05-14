@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
 import 'package:flutter_project/notifier/cart_notifier.dart';
+import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/notifier/menu_left_notifier.dart';
 import 'package:flutter_project/view/home/home_page.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,9 @@ void main() {
       ),
       ChangeNotifierProvider(
         create: (context) => CartNotifier(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => FavoriteNotifier(),
       ),
     ],
     child: MyApp(),
