@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/model/cart.dart';
+import 'package:flutter_project/notifier/cart_notifier.dart';
 
 abstract class ShopCartContract {
   void showMessageError(String message, BuildContext buildContext);
@@ -10,6 +11,7 @@ abstract class ShopCartContract {
   void onRemoveItemCart(CartItem cartItem, int index);
   void onUpdateSuccess(CartItem cartItem);
   void onDeleteSuccess(CartItem cartItem, int index);
+  void onPaymentSuccess();
 }
 
 class ShopCartPresenter {
@@ -31,13 +33,18 @@ class ShopCartPresenter {
     _view.onRemoveItemCart(cartItem, index);
   }
 
-  onUpdateSuccess(CartItem cartItem){
+  onUpdateSuccess(CartItem cartItem, CartNotifier cartNotifier){
+    cartNotifier.currentLoading = false;
     _view.onUpdateSuccess(cartItem);
   }
 
   onDeleteSuccess(CartItem cartItem, int index){
     onHideProgressDialog();
     _view.onDeleteSuccess(cartItem, index);
+  }
+
+  onPaymentSuccess(){
+    _view.onPaymentSuccess();
   }
 
   onShowProgressDialog(){

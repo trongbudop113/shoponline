@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_project/common/common.dart';
-import 'package:flutter_project/model/body_right.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class HomeContract {
@@ -9,6 +8,7 @@ abstract class HomeContract {
   void goToWishList();
   void goToPerson();
   void goToDetail();
+  void goToChat(String uuid);
   void showToastMessage(String message);
   void showMessageError(String message, BuildContext buildContext);
 }
@@ -44,6 +44,17 @@ class HomePresenter {
     bool intValue = prefs.getBool(Common.LOGIN) ?? false;
     if(intValue){
       _view.goToWishList();
+    }else{
+      _view.goToLogin();
+    }
+  }
+
+  goToChatPage(BuildContext mContext) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool intValue = prefs.getBool(Common.LOGIN) ?? false;
+    String uuid = prefs.getString(Common.UUID) ?? '';
+    if(intValue){
+      _view.goToChat(uuid);
     }else{
       _view.goToLogin();
     }

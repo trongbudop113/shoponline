@@ -15,9 +15,9 @@ class CheckoutPresenter {
 
   CheckoutPresenter(this._view);
 
-  Future<void> checkLogin(FirebaseUser firebaseUser, String type, BuildContext mContext, AuthNotifier authNotifier) async{
+  Future<void> checkLogin(User firebaseUser, String type, BuildContext mContext, AuthNotifier authNotifier) async{
     try{
-      var snapshot = Firestore.instance.collection(DatabaseCollection.ALL_USER).document(firebaseUser.uid);
+      var snapshot = Firestore.instance.collection(DatabaseCollection.ALL_USER).doc(firebaseUser.uid);
 
       snapshot.get().then((value) {
         if(value.exists){
@@ -35,8 +35,8 @@ class CheckoutPresenter {
   setUserData(UserData userData, BuildContext mContext){
     try{
       var snapshot = Firestore.instance.collection(DatabaseCollection.ALL_USER);
-      var document = snapshot.document(userData.id);
-      document.setData(userData.toJson()).whenComplete(() => backToHome(userData.id));
+      var document = snapshot.doc(userData.id);
+      document.set(userData.toJson()).whenComplete(() => backToHome(userData.id));
     }catch(e){
       showMessageError(e.toString(), mContext);
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class Common {
   //screen
@@ -23,5 +24,11 @@ class Common {
     }else{
       return false;
     }
+  }
+
+  static String getCurrencyFormat(dynamic data){
+    final oCcy = new NumberFormat("#,##0", "en_US");
+    var number = data == null ? 0.0 : data;
+    return oCcy.format(double.parse(number.toString()));
   }
 }

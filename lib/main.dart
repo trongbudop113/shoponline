@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
@@ -8,13 +9,15 @@ import 'package:flutter_project/notifier/menu_left_notifier.dart';
 import 'package:flutter_project/view/home/home_page.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+  void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: Colors.grey,
           statusBarIconBrightness: Brightness.light
       )
   );
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(

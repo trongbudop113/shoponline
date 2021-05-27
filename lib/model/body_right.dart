@@ -9,6 +9,7 @@ class BodyRight {
   String description;
   String price;
   List colors = [];
+  List sizes = [];
   Timestamp createdAt;
   Timestamp updatedAt;
 
@@ -23,6 +24,7 @@ class BodyRight {
     description = data['description'];
     price = data['price'];
     colors = data['colors'];
+    sizes = data['sizes'];
     createdAt = data['createdAt'];
     updatedAt = data['updatedAt'];
   }
@@ -37,6 +39,7 @@ class BodyRight {
       'description': description,
       'price': price,
       'colors': colors,
+      'sizes': sizes,
       'createdAt': createdAt,
       'updatedAt': updatedAt
     };

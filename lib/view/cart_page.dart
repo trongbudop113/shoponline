@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/api/cart_api.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/item_view/item_cart.dart';
 import 'package:flutter_project/model/cart.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
@@ -124,9 +125,9 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              textView('Thành tiền: ' + '100.000', BLACK, 20, FontWeight.normal),
-              textView('Giảm giá: ' + '20.000', BLACK, 20, FontWeight.normal),
-              textView('Tổng: ' + '80.000', BLACK, 20, FontWeight.normal),
+              textView('Thành tiền: ' + '${Common.getCurrencyFormat(context.watch<CartNotifier>().cartTotalItem.total)}', BLACK, 20, FontWeight.normal),
+              textView('Giảm giá: ' + '${context.watch<CartNotifier>().cartTotalItem.discount}', BLACK, 20, FontWeight.normal),
+              textView('Tổng cộng: ' + '${Common.getCurrencyFormat(context.watch<CartNotifier>().cartTotalItem.totalFinal)}', BLACK, 20, FontWeight.normal),
             ],
           ),
         ),
@@ -144,9 +145,7 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
             child: textView('Thanh toán', WHITE, 20, FontWeight.normal),
           ),
           onTap: (){
-            setState(() {
-              //getListCart();
-            });
+            handlePayment();
           },
         ),
       );
@@ -166,11 +165,11 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
                 ItemCartBody(
                     itemHeight: itemHeightCustom,
                     itemWidth: itemWidthCustom,
-                    cartItem: context.watch<CartNotifier>().cartList[index],
+                    cartItem: context.watch<CartNotifier>().cartTotalItem.cartItems[index],
                     shopCartPresenter: shopCartPresenter,
                     index: index,
                 ),
-              childCount: context.watch<CartNotifier>().cartList.length,
+              childCount: context.watch<CartNotifier>().cartTotalItem.cartItems.length,
             )
         )
       );
@@ -179,57 +178,73 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBarNormal(heightAppbar: heightAppbar),
-      body: Container(
-        width: itemWidth,
-        child: !Common.isPortrait(context) ?
-        Container(
-          child: Row(
-            children: [
-              Container(
-                width: itemWidth * 0.6,
-                height: itemHeight,
-                child: CustomScrollView(
-                  physics: BouncingScrollPhysics(),
-                  slivers: [
-                    spaceHeight(0.02),
-                    yourCart(),
-                    spaceHeight(0.02),
-                    listCart(true),
-                    spaceHeight(0.02),
-                  ],
-                ),
+      body: Stack(
+        children: [
+          Container(
+            width: itemWidth,
+            child: !Common.isPortrait(context) ?
+            Container(
+              child: Row(
+                children: [
+                  Container(
+                    width: itemWidth * 0.6,
+                    height: itemHeight,
+                    child: CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      slivers: [
+                        spaceHeight(0.02),
+                        yourCart(),
+                        spaceHeight(0.02),
+                        listCart(true),
+                        spaceHeight(0.02),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: itemWidth * 0.4,
+                    height: itemHeight,
+                    child: CustomScrollView(
+                      slivers: [
+                        spaceHeight(0.1),
+                        totalPayment(),
+                        spaceHeight(0.05),
+                        codeBox(itemWidth * 0.35),
+                        paymentCart(),
+                      ],
+                    ),
+                  )
+                ],
               ),
-              Container(
-                width: itemWidth * 0.4,
-                height: itemHeight,
-                child: CustomScrollView(
-                  slivers: [
-                    spaceHeight(0.1),
-                    totalPayment(),
-                    spaceHeight(0.05),
-                    codeBox(itemWidth * 0.35),
-                    paymentCart(),
-                  ],
-                ),
-              )
-            ],
+            ) :
+            CustomScrollView(
+              physics: BouncingScrollPhysics(),
+              slivers: [
+                spaceHeight(0.02),
+                yourCart(),
+                listCart(false),
+                codeBox(itemWidth),
+                spaceHeight(0.05),
+                totalPayment(),
+                paymentCart()
+              ],
+            ),
           ),
-        ) :
-        CustomScrollView(
-          physics: BouncingScrollPhysics(),
-          slivers: [
-            spaceHeight(0.02),
-            yourCart(),
-            listCart(false),
-            codeBox(itemWidth),
-            spaceHeight(0.05),
-            totalPayment(),
-            paymentCart()
-          ],
-        ),
+          cartNotifier.currentLoading ?
+          Container(
+            child: Center(
+              child: IndicatorProgress(),
+            ),
+          ) :
+          Container()
+        ],
       )
 
     );
+  }
+
+  void handlePayment(){
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    paymentCart(cartNotifier, authNotifier, shopCartPresenter);
   }
 
   @override
@@ -261,5 +276,11 @@ class _CartPageState extends State<CartPage> implements ShopCartContract {
   void onRemoveItemCart(CartItem cartItem, int index) {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     removeItemCart(cartItem, cartNotifier, shopCartPresenter, index, context, authNotifier);
+  }
+
+  @override
+  void onPaymentSuccess() {
+    Toast.show('Your order has been success', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+    Navigator.pop(context);
   }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/presenter/home/home_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FooterPage extends StatefulWidget {
-  FooterPage({Key key, this.title}) : super(key: key);
-  final String title;
+  FooterPage({Key key, this.homePresenter}) : super(key: key);
+  final HomePresenter homePresenter;
 
   @override
   _FooterPageState createState() => _FooterPageState();
@@ -67,22 +69,32 @@ class _FooterPageState extends State<FooterPage> {
           children: [
             textView('Theo dõi chúng tôi', WHITE, textSize20, FontWeight.bold),
             SizedBox(height: itemHeight * 0.01),
-            Row(
-              children: [
-                SizedBox(width: itemWidth * 0.01),
-                Icon(Icons.face, size: itemWidth * 0.011, color: WHITE),
-                SizedBox(width: itemWidth * 0.005),
-                textView('Facebook', WHITE, itemWidth * 0.01, FontWeight.normal),
-              ],
+            InkWell(
+              child: Row(
+                children: [
+                  SizedBox(width: itemWidth * 0.01),
+                  Icon(Icons.face, size: itemWidth * 0.011, color: WHITE),
+                  SizedBox(width: itemWidth * 0.005),
+                  textView('Facebook', WHITE, itemWidth * 0.01, FontWeight.normal),
+                ],
+              ),
+              onTap: (){
+                _launchInWebViewWithJavaScript('https://www.facebook.com/trong.luuhoang/');
+              },
             ),
             SizedBox(height: itemHeight * spaceInt),
-            Row(
-              children: [
-                SizedBox(width: itemWidth * 0.01),
-                Icon(Icons.camera_alt, size: itemWidth * 0.011, color: WHITE),
-                SizedBox(width: itemWidth * 0.005),
-                textView('Instagram', WHITE, itemWidth * 0.01, FontWeight.normal)
-              ],
+            InkWell(
+              child: Row(
+                children: [
+                  SizedBox(width: itemWidth * 0.01),
+                  Icon(Icons.camera_alt, size: itemWidth * 0.011, color: WHITE),
+                  SizedBox(width: itemWidth * 0.005),
+                  textView('Instagram', WHITE, itemWidth * 0.01, FontWeight.normal)
+                ],
+              ),
+              onTap: (){
+                _launchInWebViewWithJavaScript('https://www.instagram.com/luu_hoang_trong/');
+              },
             )
           ],
         ),
@@ -97,22 +109,32 @@ class _FooterPageState extends State<FooterPage> {
           children: [
             textView('Liên hệ', WHITE, textSize20, FontWeight.bold),
             SizedBox(height: itemHeight * 0.01),
-            Row(
-              children: [
-                SizedBox(width: itemWidth * 0.01),
-                Icon(Icons.phone_android, size: itemWidth * 0.011, color: WHITE),
-                SizedBox(width: itemWidth * 0.005),
-                textView('Gọi cho tôi', WHITE, itemWidth * 0.01, FontWeight.normal),
-              ],
+            InkWell(
+              child: Row(
+                children: [
+                  SizedBox(width: itemWidth * 0.01),
+                  Icon(Icons.phone_android, size: itemWidth * 0.011, color: WHITE),
+                  SizedBox(width: itemWidth * 0.005),
+                  textView('Gọi cho tôi', WHITE, itemWidth * 0.01, FontWeight.normal),
+                ],
+              ),
+              onTap: (){
+                launch("tel://0356882046");
+              },
             ),
             SizedBox(height: itemHeight * spaceInt),
-            Row(
-              children: [
-                SizedBox(width: itemWidth * 0.01),
-                Icon(Icons.chat, size: itemWidth * 0.011, color: WHITE),
-                SizedBox(width: itemWidth * 0.005),
-                textView('Chat với chúng tôi', WHITE, itemWidth * 0.01, FontWeight.normal)
-              ],
+            InkWell(
+              child: Row(
+                children: [
+                  SizedBox(width: itemWidth * 0.01),
+                  Icon(Icons.chat, size: itemWidth * 0.011, color: WHITE),
+                  SizedBox(width: itemWidth * 0.005),
+                  textView('Chat với chúng tôi', WHITE, itemWidth * 0.01, FontWeight.normal)
+                ],
+              ),
+              onTap: () {
+                widget.homePresenter.goToChatPage(context);
+              },
             )
           ],
         ),
@@ -146,5 +168,18 @@ class _FooterPageState extends State<FooterPage> {
         ],
       )
     );
+  }
+
+  Future<void> _launchInWebViewWithJavaScript(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableJavaScript: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

@@ -5,11 +5,15 @@ import 'package:flutter_project/model/body_right.dart';
 class BodyRightNotifier with ChangeNotifier {
   List<BodyRight> _productList = [];
   BodyRight _currentProduct;
+  String _currentColor;
+  String _currentSize;
   bool _isLoading = false;
 
   UnmodifiableListView<BodyRight> get productList => UnmodifiableListView(_productList);
 
   BodyRight get currentProduct => _currentProduct;
+  String get currentColor => _currentColor;
+  String get currentSize => _currentSize;
   bool get currentLoading => _isLoading;
 
   set productList(List<BodyRight> productList) {
@@ -24,6 +28,16 @@ class BodyRightNotifier with ChangeNotifier {
 
   set currentProduct(BodyRight bodyRight) {
     _currentProduct = bodyRight;
+    notifyListeners();
+  }
+
+  set currentColor(String currentColor) {
+    _currentColor = currentColor;
+    notifyListeners();
+  }
+
+  set currentSize(String currentSize) {
+    _currentSize = currentSize;
     notifyListeners();
   }
 

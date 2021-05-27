@@ -3,15 +3,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_project/model/user.dart';
 
 class AuthNotifier with ChangeNotifier {
-  FirebaseUser _user;
+  User _user;
   UserData _userData;
   int _count = 0;
 
-  FirebaseUser get user => _user;
+  User get user => _user;
   UserData get userData => _userData;
   int get count => _count;
 
-  set user(FirebaseUser user) {
+  set user(User user) {
     _user = user;
     notifyListeners();
   }

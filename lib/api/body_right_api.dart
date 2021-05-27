@@ -13,9 +13,10 @@ import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 addToCart(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int count, CartPresenter cartPresenter, CartNotifier cartNotifier) async{
+  cartNotifier.currentLoading = true;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String uid = prefs.getString(Common.UUID) ?? '';
-  var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_CART).document(uid).collection(uid);
+  var snapshot = await FirebaseFirestore.instance.collection(DatabaseCollection.ALL_CART).doc(uid).collection(uid);
 
   CartItem cart = new CartItem();
   cart.quantity = count;
@@ -25,17 +26,17 @@ addToCart(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int co
   cart.discount = bodyRightNotifier.currentProduct.discount;
   cart.price = bodyRightNotifier.currentProduct.price;
 
-  snapshot.document(bodyRightNotifier.currentProduct.id).get().then((value) {
+  snapshot.doc(bodyRightNotifier.currentProduct.id).get().then((value) {
     if(value.exists){
-      Map<String, dynamic> a = value.data;
+      Map<String, dynamic> a = value.data();
       var item = CartItem.fromJson(a);
 
       cart.quantity = cart.quantity + item.quantity;
-      snapshot.document(bodyRightNotifier.currentProduct.id).updateData(cart.toJson()).whenComplete(() {
+      snapshot.doc(bodyRightNotifier.currentProduct.id).update(cart.toJson()).whenComplete(() {
         cartPresenter.onAddToCartSuccess(cart);
       });
     }else{
-      snapshot.document(bodyRightNotifier.currentProduct.id).setData(cart.toJson()).whenComplete(() {
+      snapshot.doc(bodyRightNotifier.currentProduct.id).set(cart.toJson()).whenComplete(() {
         cartPresenter.onAddToCartSuccess(cart);
         getCountCart(authNotifier, cartNotifier);
       });
@@ -47,14 +48,14 @@ addToCart(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int co
 addToWishList(AuthNotifier authNotifier, BodyRightNotifier bodyRightNotifier, int count, CartPresenter cartPresenter, FavoriteNotifier favoriteNotifier) async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String uid = prefs.getString(Common.UUID) ?? '';
-  var snapshot = await Firestore.instance.collection(DatabaseCollection.ALL_WISH_LIST).document(uid).collection(uid);
+  var snapshot = await FirebaseFirestore.instance.collection(DatabaseCollection.ALL_WISH_LIST).doc(uid).collection(uid);
 
 
-  snapshot.document(bodyRightNotifier.currentProduct.id).get().then((value) {
+  snapshot.doc(bodyRightNotifier.currentProduct.id).get().then((value) {
     if(value.exists){
       cartPresenter.onAddToWishListExist(bodyRightNotifier.currentProduct.name + ' is existed in your list');
     }else{
-      snapshot.document(bodyRightNotifier.currentProduct.id).setData(bodyRightNotifier.currentProduct.toMap()).whenComplete(() {
+      snapshot.doc(bodyRightNotifier.currentProduct.id).set(bodyRightNotifier.currentProduct.toMap()).whenComplete(() {
         cartPresenter.onAddToWishListSuccess(bodyRightNotifier.currentProduct);
         getListFavoriteData(favoriteNotifier);
       });

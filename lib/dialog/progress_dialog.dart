@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class IndicatorProgress extends StatelessWidget{
   @override
@@ -10,9 +11,7 @@ class IndicatorProgress extends StatelessWidget{
       padding: EdgeInsets.all(10),
       width: 100,
       height: 100,
-      child: CircularProgressIndicator(
-        backgroundColor: WHITE,
-      ),
+      child: SpinKitFadingCube(color: WHITE)
     );
   }
 

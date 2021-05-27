@@ -445,7 +445,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   }
 
   @override
-  void loginSuccess(FirebaseUser firebaseUser, String type) {
+  void loginSuccess(User firebaseUser, String type) {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     checkoutPresenter.checkLogin(firebaseUser, type, context, authNotifier);
   }

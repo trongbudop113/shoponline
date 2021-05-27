@@ -1,14 +1,22 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/notifier/body_right_notifier.dart';
 import 'package:flutter_project/notifier/menu_left_notifier.dart';
 import 'package:flutter_project/presenter/home/home_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/view/cart_page.dart';
+import 'package:flutter_project/view/chat/list_chat_page.dart';
 import 'package:flutter_project/view/detail_item_shop_page.dart';
 import 'package:flutter_project/view/favorite_page.dart';
 import 'package:flutter_project/view/home/banner_page.dart';
@@ -20,6 +28,8 @@ import 'package:flutter_project/view/profile_page.dart';
 import 'package:flutter_project/widget/dialog_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -36,6 +46,8 @@ class _HomePageState extends State<HomePage> implements HomeContract {
   bool _isShow = false;
   String categoryName;
   double heightAppbar = 0.0;
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -52,6 +64,76 @@ class _HomePageState extends State<HomePage> implements HomeContract {
     } else {
       heightAppbar = 85.0;
     }
+  }
+
+  void registerNotification(String uid) {
+    firebaseMessaging.requestNotificationPermissions();
+
+    firebaseMessaging.configure(
+    onMessage: (Map<String, dynamic> message) {
+      print('onMessage: $message');
+      Platform.isAndroid ? showNotification(message['notification']) : showNotification(message['aps']['alert']);
+      return;
+    },
+    onResume: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      return;
+    },
+    onLaunch: (Map<String, dynamic> message) {
+      print('onLaunch: $message');
+      return;
+    }, onBackgroundMessage: myBackgroundMessageHandler
+    );
+
+    firebaseMessaging.getToken().then((token) {
+      print('token: $token');
+      Firestore.instance.collection(DatabaseCollection.ALL_USER).doc(uid).update({'pushToken': token});
+    }).catchError((err) {
+      Toast.show("$err", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+    });
+  }
+
+  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+    if (message.containsKey('data')) {
+      // Handle data message
+      final dynamic data = message['data'];
+      print("myBackgroundMessageHandler data: $data");
+    }
+
+    if (message.containsKey('notification')) {
+      // Handle notification message
+      final dynamic notification = message['notification'];
+      print("myBackgroundMessageHandler notification: $notification");
+    }
+
+    // Or do other work.
+  }
+
+  // void configLocalNotification() {
+  //   var initializationSettingsAndroid = new AndroidInitializationSettings('app_icon');
+  //   var initializationSettingsIOS = new IOSInitializationSettings();
+  //   var initializationSettings = new InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS);
+  //   flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // }
+
+  void showNotification(message) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+      Platform.isAndroid ? 'com.verz.shop' : 'com.verz.shop',
+      'Flutter chat demo',
+      'your channel description',
+      playSound: true,
+      enableVibration: true,
+      importance: Importance.Max,
+      priority: Priority.High,
+    );
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
+    print(message);
+
+    // await flutterLocalNotificationsPlugin.show(
+    //     0, message['title'].toString(), message['body'].toString(), platformChannelSpecifics,
+    //     payload: json.encode(message));
   }
 
   @override
@@ -144,7 +226,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
             ),
           ),
           SliverToBoxAdapter(
-            child: FooterPage(),
+            child: FooterPage(homePresenter: homePresenter),
           )
         ],
       ),
@@ -166,10 +248,16 @@ class _HomePageState extends State<HomePage> implements HomeContract {
   }
 
   @override
-  void goToLogin() {
-    Navigator.push(context, MaterialPageRoute(
+  Future<void> goToLogin() async {
+    var a = await Navigator.push(context, MaterialPageRoute(
         builder: (context) => LoginPage()
     ));
+    if(a.toString() != null){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String uid = prefs.getString(Common.UUID) ?? '';
+      registerNotification(uid);
+      //configLocalNotification();
+    }
   }
 
   @override
@@ -197,5 +285,10 @@ class _HomePageState extends State<HomePage> implements HomeContract {
   @override
   void showToastMessage(String message) {
 
+  }
+
+  @override
+  void goToChat(String uuid) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ListChatScreen(currentUserId: uuid)));
   }
 }

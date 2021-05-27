@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LoginContract {
-  void loginSuccess(FirebaseUser firebaseUser, String type);
+  void loginSuccess(User firebaseUser, String type);
   void backToHome();
   void goToRegister(String userId, String type);
   void onGoToRegister();
@@ -53,7 +53,7 @@ class LoginPresenter {
     _view.showMessageError(message, buildContext);
   }
 
-  onLoginSuccess(FirebaseUser firebaseUser, String type){
+  onLoginSuccess(User firebaseUser, String type){
     onHideProgressDialog();
     _view.loginSuccess(firebaseUser, type);
   }
@@ -77,22 +77,24 @@ class LoginPresenter {
     return 'User signed out';
   }
 
-  Future<FirebaseUser> signInWithGoogle() async {
-    //await Firebase.initializeApp();
-
+  Future<User> signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    googleSignIn.signOut().whenComplete((){
+      print('okkkkkk');
+    });
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken,
       idToken: googleSignInAuthentication.idToken,
     );
 
     var userCredential = await _firebaseAuth.signInWithCredential(credential);
-    final FirebaseUser user = userCredential.user;
+    final User user = userCredential.user;
 
     if (user != null) {
-      var currentUser = await _firebaseAuth.currentUser();
+      var currentUser = await _firebaseAuth.currentUser;
       assert(user.uid == currentUser.uid);
       return user;
     }
@@ -100,14 +102,12 @@ class LoginPresenter {
     return null;
   }
 
-  Future<FirebaseUser> loginWithFacebook() async {
+  Future<User> loginWithFacebook() async {
     final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
 
     if(result.status == FacebookLoginStatus.loggedIn){
       final FacebookAccessToken accessToken = result.accessToken;
-      final credential = FacebookAuthProvider.getCredential(
-        accessToken: result.accessToken.token,
-      );
+      final credential = FacebookAuthProvider.credential(accessToken.token);
       final user = (await _firebaseAuth.signInWithCredential(credential)).user;
       facebookSignIn.testApi();
       return user;
@@ -130,7 +130,7 @@ class LoginPresenter {
         password: password,
       );
 
-      final FirebaseUser user = userCredential.user;
+      final User user = userCredential.user;
       print(user.uid);
 
       if (user != null) {
@@ -165,7 +165,7 @@ class LoginPresenter {
         password: password,
       );
 
-      final FirebaseUser user = userCredential.user;
+      final User user = userCredential.user;
       print(user.uid);
 
       if (user != null) {
@@ -190,6 +190,40 @@ class LoginPresenter {
 
     return null;
   }
+
+  // Future<void> loginWithEmailLink(String email, BuildContext mContext) async {
+  //   onShowProgressDialog();
+  //   //await Firebase.initializeApp();
+  //   var auth = FirebaseAuth.instance;
+  //
+  //   try{
+  //     await _firebaseAuth.sendSignInWithEmailLink(
+  //         email: email,
+  //         url: "https://onlineshop-b08c5.firebaseapp.com/",
+  //         handleCodeInApp: true,
+  //         iOSBundleID: 'com.verz.shop',
+  //         androidPackageName: 'com.verz.shop',
+  //         androidInstallIfNotAvailable: true,
+  //         androidMinimumVersion: '12'
+  //     ).catchError((onError){
+  //       print('Error sending email verification $onError');
+  //     }).then((value) async {
+  //
+  //     });;
+  //   }catch(_){
+  //     if(_ is PlatformException) {
+  //       if(_.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+  //         showMessageError('$email has already been registered', mContext);
+  //       }else{
+  //         showMessageError(_.message, mContext);
+  //       }
+  //     }else{
+  //       showMessageError(_.toString(), mContext);
+  //     }
+  //   }
+  //
+  //   return null;
+  // }
 
   onGoToRegister(){
     _view.onGoToRegister();
