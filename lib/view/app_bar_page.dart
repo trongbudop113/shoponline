@@ -158,3 +158,74 @@ class AppBarNormalPage extends StatelessWidget {
     );
   }
 }
+
+class AppBarProfile extends PreferredSize {
+  final double heightAppbar;
+  final AppbarPresenter appbarPresenter;
+  final AuthNotifier authNotifier;
+
+  AppBarProfile({this.heightAppbar, this.appbarPresenter, this.authNotifier});
+
+  @override
+  Size get preferredSize => Size.fromHeight(heightAppbar);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: preferredSize.height,
+        child: AppBarProfilePage(context: context, appbarPresenter: appbarPresenter, authNotifier: authNotifier)
+    );
+  }
+}
+
+class AppBarProfilePage extends StatelessWidget {
+
+  AppBarProfilePage({Key key, this.context, this.appbarPresenter, this.authNotifier}) : super(key: key);
+  final BuildContext context;
+  final AppbarPresenter appbarPresenter;
+  final AuthNotifier authNotifier;
+
+  var sizeTextCustom = 28.0;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return AppBar(
+      backgroundColor: BLACK,
+      automaticallyImplyLeading: false,
+      actions: [
+        SizedBox(width: 10),
+        InkWell(
+          onTap: (){
+            Navigator.pop(context);
+          },
+          child: Container(
+            width: 50,
+            height: 50,
+            child: Container(
+              alignment: Alignment.center,
+              child: Icon(Icons.arrow_back, size: 30, color: WHITE),
+            ),
+          ),
+        ),
+        Spacer(flex: 1,),
+        Container(
+          alignment: Alignment.center,
+          child: textViewCenter('WEARISM', WHITE, sizeTextCustom, FontWeight.bold),
+        ),
+        Spacer(flex: 1,),
+        InkWell(
+          child: Container(
+            width: 50,
+            height: 50,
+            child: Icon(Icons.logout, size: 30, color: WHITE),
+          ),
+          onTap: (){
+            appbarPresenter.handleLogoutApp(authNotifier);
+          },
+        ),
+        SizedBox(width: 15)
+      ],
+    );
+  }
+}

@@ -12,6 +12,7 @@ abstract class LoginContract {
   void backToHome();
   void goToRegister(String userId, String type);
   void onGoToRegister();
+  void onBackToLogin();
   void showMessageError(String message, BuildContext buildContext);
   void onShowProgressDialog();
   void onHideProgressDialog();
@@ -139,6 +140,7 @@ class LoginPresenter {
 
         assert(!user.isAnonymous);
         assert(await user.getIdToken() != null);
+        onLoginSuccess(user, 'email');
       }
     }catch(_){
       if(_ is PlatformException) {
@@ -227,6 +229,10 @@ class LoginPresenter {
 
   onGoToRegister(){
     _view.onGoToRegister();
+  }
+
+  onBackToLogin(){
+    _view.onBackToLogin();
   }
 
   onShowProgressDialog(){

@@ -165,4 +165,14 @@ class _FavoritePageState extends State<FavoritePage> implements FavoriteContract
   void showDialogLogin(String message) {
 
   }
+
+  @override
+  void goToFavoritePage() {
+
+  }
+
+  @override
+  void logoutApp() {
+
+  }
 }

@@ -192,7 +192,6 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
                           itemBuilder: (context, index) {
                             return InkWell(
                               child: Container(
-                                margin: EdgeInsets.only(left: 5.0),
                                 padding: EdgeInsets.all(5.0),
                                 width: 45,
                                 height: 40,
@@ -231,7 +230,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
                               return Container(
                                 alignment: Alignment.center,
                                 margin: EdgeInsets.only(left: 5.0),
-                                width: 55,
+                                width: 60,
                                 height: 40,
                                 decoration: BoxDecoration(
                                     border: Border.all(width: 1)
@@ -414,5 +413,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
   @override
   void showMessageError(String message, BuildContext buildContext) {
     print('aaaaaaa');
+  }
+
+  @override
+  void goToFavoritePage() {
+
+  }
+
+  @override
+  void logoutApp() {
+
   }
 }

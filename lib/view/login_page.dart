@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   LoginPresenter loginPresenter;
   CheckoutPresenter checkoutPresenter;
   bool isGoToRegister = false;
+  bool isSignUp = false;
   int _radioValue = 0;
   String userId = '';
   String typeLogin = '';
@@ -51,6 +52,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   TextEditingController cityTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
+  TextEditingController confirmPasswordTextController = TextEditingController();
 
   var textStyle = GoogleFonts.bungee(fontSize: 10);
   var textStyleText = GoogleFonts.bungee(fontSize: 15);
@@ -124,6 +126,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
   Widget build(BuildContext context) {
 
     var itemWidth = MediaQuery.of(context).size.width;
+    var itemWidthCus = Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeight = MediaQuery.of(context).size.height;
 
     var itemWidthRight = MediaQuery.of(context).size.width * (!Common.isPortrait(context) ? 0.4 : 0.8);
@@ -151,27 +154,6 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                   color: BLACK,
                   child: Stack(
                     children: [
-                      Positioned(
-                        child: InkWell(
-                          focusColor: WHITE,
-                          hoverColor: WHITE,
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            child: Icon(
-                              Icons.arrow_back,
-                              color: WHITE,
-                            ),
-                          ),
-                          onTap: (){
-                            setState(() {
-                              isGoToRegister = false;
-                            });
-                          },
-                        ),
-                        left: itemWidth * 0.01,
-                        top: itemWidth * 0.01,
-                      ),
                       CustomScrollView(
                         physics: BouncingScrollPhysics(),
                         slivers: [
@@ -203,6 +185,7 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                 ),
                                 SizedBox(height: itemHeight * 0.03,),
                                 Container(
+                                  width: itemWidthRight,
                                   margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
                                   child: Row(
                                     children: [
@@ -237,13 +220,13 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                   children: [
                                     Container(
                                       margin: EdgeInsets.only(left: itemWidth * 0.05),
-                                      width: itemWidth * 0.3,
+                                      width: itemWidthRight * 0.35,
                                       child: _entryFieldText(streetTextController, false, TextInputType.streetAddress, 'Số nhà, tên đường'),
                                     ),
-                                    SizedBox(width: 20),
+                                    Spacer(flex: 1),
                                     Container(
                                       margin: EdgeInsets.only(right: itemWidth * 0.05),
-                                      width: itemWidth * 0.35,
+                                      width: itemWidthRight * (!Common.isPortrait(context) ? 0.35 : 0.45),
                                       child: _entryFieldText(villageTextController, false, TextInputType.streetAddress, 'Phường/Xã'),
                                     ),
                                   ],
@@ -253,13 +236,13 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                   children: [
                                     Container(
                                       margin: EdgeInsets.only(left: itemWidth * 0.05),
-                                      width: itemWidth * 0.3,
+                                      width: itemWidthRight * 0.35,
                                       child: _entryFieldText(wardTextController, false, TextInputType.streetAddress, 'Quận/Huyện'),
                                     ),
-                                    SizedBox(width: 20),
+                                    Spacer(flex: 1),
                                     Container(
                                       margin: EdgeInsets.only(right: itemWidth * 0.05),
-                                      width: itemWidth * 0.35,
+                                      width: itemWidthRight * (!Common.isPortrait(context) ? 0.35 : 0.45),
                                       child: _entryFieldText(cityTextController, false, TextInputType.streetAddress, 'Tỉnh/Thành Phố'),
                                     ),
                                   ],
@@ -271,10 +254,10 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                     width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
                                     padding: EdgeInsets.symmetric(vertical: 15),
                                     color: WHITE,
-                                    child: textView('Login', BLACK, 16, FontWeight.normal),
+                                    child: textView('Continue', BLACK, 16, FontWeight.normal),
                                   ),
                                   onTap: (){
-                                    setUserData();
+                                    checkInputData();
                                   },
                                 ),
                                 SizedBox(height: itemHeight * 0.1),
@@ -285,7 +268,26 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                       ),
                       Center(
                         child: _isShow ? IndicatorProgress() : Container(),
-                      )
+                      ),
+                      Positioned(
+                        child: InkWell(
+                          focusColor: WHITE,
+                          hoverColor: WHITE,
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            child: Icon(
+                              Icons.arrow_back,
+                              color: WHITE,
+                            ),
+                          ),
+                          onTap: (){
+                            backRegister();
+                          },
+                        ),
+                        left: itemWidth * 0.01,
+                        top: itemWidth * 0.01,
+                      ),
                     ],
                   ),
                 ) :
@@ -321,14 +323,23 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                       margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
                                       child: _entryFieldText(passwordTextController, true, TextInputType.text, 'Enter your password'),
                                     ),
+                                    SizedBox(height: isSignUp ? 20 : 0),
+                                    isSignUp ? Container(
+                                      margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
+                                      child: _entryFieldText(confirmPasswordTextController, true, TextInputType.text, 'Confirm your password'),
+                                    ) : Container(),
                                     Container(
                                       height: itemHeight * 0.08,
                                       alignment:  Alignment.center,
                                       margin: EdgeInsets.symmetric(horizontal: itemWidth * 0.05),
-                                      child: GestureDetector(
-                                        child: textView('SignUp here', WHITE, 15, FontWeight.normal),
+                                      child: InkWell(
+                                        child: textView(isSignUp ? 'Sign Up' : 'SignUp here', WHITE, 15, FontWeight.normal),
                                         onTap: (){
-                                          loginPresenter.onGoToRegister();
+                                          if(isSignUp){
+                                            handleRegister();
+                                          }else{
+                                            loginPresenter.onGoToRegister();
+                                          }
                                         },
                                       )
                                     ),
@@ -337,10 +348,14 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
                                         width: itemWidth * (!Common.isPortrait(context) ? 0.2 : 0.7),
                                         padding: EdgeInsets.symmetric(vertical: 15),
                                         color: WHITE,
-                                        child: Text('Login', textAlign: TextAlign.center, style: textStyleText),
+                                        child: Text(isSignUp ? 'Back to Login' : 'Login', textAlign: TextAlign.center, style: textStyleText),
                                       ),
                                       onTap: (){
-                                        loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
+                                        if(isSignUp){
+                                          loginPresenter.onBackToLogin();
+                                        }else{
+                                          handleLogin();
+                                        }
                                       },
                                     ),
                                     SizedBox(height: 20),
@@ -411,6 +426,52 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
     );
   }
 
+  void handleLogin(){
+    if(emailTextController.value.text.isEmpty){
+
+    }else if(passwordTextController.value.text.isEmpty){
+
+    }else{
+      loginPresenter.loginWithEmailAndPassword(emailTextController.value.text, passwordTextController.value.text, context);
+    }
+  }
+
+  void handleRegister(){
+    if(emailTextController.value.text.isEmpty){
+
+    }else if(passwordTextController.value.text.isEmpty){
+
+    }else if(confirmPasswordTextController.value.text.isEmpty){
+
+    }else{
+      if(passwordTextController.value.text == confirmPasswordTextController.value.text){
+        loginPresenter.registerWithEmailPassword(emailTextController.value.text, passwordTextController.value.text, context);
+      }else{
+
+      }
+    }
+  }
+
+  void checkInputData(){
+    if(nameTextController.value.text.isEmpty){
+
+    }else if(phoneTextController.value.text.isEmpty){
+
+    }else if(birthDayTextController.value.text.isEmpty){
+
+    }else if(streetTextController.value.text.isEmpty){
+
+    }else if(villageTextController.value.text.isEmpty){
+
+    }else if(wardTextController.value.text.isEmpty){
+
+    }else if(cityTextController.value.text.isEmpty){
+
+    }else{
+      setUserData();
+    }
+  }
+
   void setUserData(){
     UserData userData = UserData();
     userData.id = this.userId;
@@ -444,6 +505,12 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
     });
   }
 
+  void backRegister(){
+    setState(() {
+      isGoToRegister = false;
+    });
+  }
+
   @override
   void loginSuccess(User firebaseUser, String type) {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context, listen: false);
@@ -471,6 +538,15 @@ class _LoginPageState extends State<LoginPage> with KeyboardHiderMixin implement
 
   @override
   void onGoToRegister() {
+    setState(() {
+      isSignUp = true;
+    });
+  }
 
+  @override
+  void onBackToLogin() {
+    setState(() {
+      isSignUp = false;
+    });
   }
 }

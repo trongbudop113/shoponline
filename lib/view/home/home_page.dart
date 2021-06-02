@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
     });
   }
 
-  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
     if (message.containsKey('data')) {
       // Handle data message
       final dynamic data = message['data'];

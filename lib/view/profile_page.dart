@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_project/api/menu_left_api.dart';
+import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/notifier/auth_notifier.dart';
-import 'package:flutter_project/notifier/cart_notifier.dart';
 import 'package:flutter_project/notifier/favorite_notifier.dart';
 import 'package:flutter_project/presenter/app_bar_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/view/app_bar_page.dart';
+import 'package:flutter_project/view/cart_page.dart';
+import 'package:flutter_project/view/favorite_page.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -72,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
     }
 
     return Scaffold(
-      appBar: AppBarCart(appbarPresenter: appbarPresenter, heightAppbar: heightAppbar),
+      appBar: AppBarProfile(heightAppbar: heightAppbar, appbarPresenter: appbarPresenter, authNotifier: authNotifier),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -92,17 +94,108 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
             SliverToBoxAdapter(
               child: Container(
                 width: itemWidth,
-                height: itemHeight - heightAppbar,
-                padding: EdgeInsets.all(itemWidth * 0.05),
+                height: 1000,
+                padding: EdgeInsets.all(!Common.isPortrait(context) ? 50.0 : 10.0),
                 child: Column(
                   children: [
-                    Spacer(flex: 1,),
                     Container(
-                      height: 600,
+                      height: !Common.isPortrait(context) ? 400.0 : 480.0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    child: Icon(
+                                      Icons.payment,
+                                      size: 100,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: !Common.isPortrait(context) ? 150 : itemWidth * 0.3,
+                                    child: textViewCenter('Đơn hàng hiện tại', Colors.grey[500], 20, FontWeight.normal)
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: 50),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    child: Icon(
+                                      Icons.history,
+                                      size: 100,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Container(
+                                      width: !Common.isPortrait(context) ? 150 : itemWidth * 0.3,
+                                    child: textViewCenter('Lịch sử mua hàng', Colors.grey[500], 20, FontWeight.normal)
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    child: Icon(
+                                      Icons.account_balance_wallet,
+                                      size: 100,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Container(
+                                      width: !Common.isPortrait(context) ? 150 : itemWidth * 0.3,
+                                      child: textViewCenter('Mã giảm giá của bạn', Colors.grey[500], 20, FontWeight.normal)
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: 50),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    child: Icon(
+                                      Icons.verified_outlined,
+                                      size: 100,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Container(
+                                      width: !Common.isPortrait(context) ? 150 : itemWidth * 0.3,
+                                      child: textViewCenter('Điểm tích lũy', Colors.grey[500], 20, FontWeight.normal)
+                                  ),
+                                ],
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 500,
                       child: Stack(
                         children: [
                           Positioned(
-                            top: (itemHeight - (itemWidth * 0.1)) * 0.07,
+                            top: 70,
                             bottom: 0.0,
                             left: 0.0,
                             right: 0.0,
@@ -113,32 +206,42 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                      height: (itemHeight - (itemWidth * 0.1)) * 0.12,
+                                      height: 100,
                                       child: Row(
                                         children: [
                                           Spacer(flex: 1,),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  textView(context.watch<FavoriteNotifier>().favoriteCount.toString(), BLACK, 20, FontWeight.bold),
-                                                  Icon(Icons.favorite, color: BLACK, size: 35),
-                                                ],
-                                              ),
-                                              textView('Favorite', BLACK, 10, FontWeight.bold),
-                                            ],
+                                          InkWell(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    textView(context.watch<FavoriteNotifier>().favoriteCount.toString(), BLACK, 20, FontWeight.bold),
+                                                    Icon(Icons.favorite, color: BLACK, size: 35),
+                                                  ],
+                                                ),
+                                                textView('Favorite', BLACK, 10, FontWeight.bold),
+                                              ],
+                                            ),
+                                            onTap: (){
+                                              appbarPresenter.checkFavoritePage();
+                                            },
                                           ),
                                           SizedBox(width: 20),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  textView(context.watch<AuthNotifier>().count.toString(), BLACK, 20, FontWeight.bold),
-                                                  Icon(Icons.shopping_cart, color: BLACK, size: 35)
-                                                ],
-                                              ),
-                                              textView('Your cart', BLACK, 10, FontWeight.bold),
-                                            ],
+                                          InkWell(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    textView(context.watch<AuthNotifier>().count.toString(), BLACK, 20, FontWeight.bold),
+                                                    Icon(Icons.shopping_cart, color: BLACK, size: 35)
+                                                  ],
+                                                ),
+                                                textView('Your cart', BLACK, 10, FontWeight.bold),
+                                              ],
+                                            ),
+                                            onTap: (){
+                                              appbarPresenter.checkLoginGoToCart();
+                                            },
                                           )
                                         ],
                                       ),
@@ -181,7 +284,9 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
 
   @override
   void goToCartPage() {
-
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CartPage()
+    ));
   }
 
   @override
@@ -191,6 +296,18 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
 
   @override
   void showMessageError(String message, BuildContext buildContext) {
+    print(message);
+  }
 
+  @override
+  void goToFavoritePage() {
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => FavoritePage()
+    ));
+  }
+
+  @override
+  void logoutApp() {
+    Navigator.pop(context);
   }
 }
