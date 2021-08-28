@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -8,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/common/common.dart';
 import 'package:flutter_project/common/database_collection.dart';
 import 'package:flutter_project/values/color_page.dart';
+import 'package:flutter_project/view/app_bar_page.dart';
 import 'package:flutter_project/widget/full_photo.dart';
+import 'package:flutter_project/widget/image_widget.dart';
 import 'package:flutter_project/widget/loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -17,22 +18,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Chat extends StatelessWidget {
   final String peerId;
   final String peerAvatar;
+  final double heightAppbar;
 
-  Chat({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
+  Chat({Key key, @required this.peerId, @required this.peerAvatar, this.heightAppbar}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'CHAT',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBarNormal(heightAppbar: heightAppbar),
       body: ChatScreen(
         peerId: peerId,
         peerAvatar: peerAvatar,
+        heightAppbar: heightAppbar,
       ),
     );
   }
@@ -41,8 +38,9 @@ class Chat extends StatelessWidget {
 class ChatScreen extends StatefulWidget {
   final String peerId;
   final String peerAvatar;
+  final double heightAppbar;
 
-  ChatScreen({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
+  ChatScreen({Key key, @required this.peerId, @required this.peerAvatar, this.heightAppbar}) : super(key: key);
 
   @override
   State createState() => ChatScreenState(peerId: peerId, peerAvatar: peerAvatar);
@@ -187,7 +185,7 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Widget buildItem(int index, DocumentSnapshot document) {
+  Widget buildItem(int index, DocumentSnapshot document, double heightAppbar) {
     if (document.data()['idFrom'] == id) {
       // Right (my message)
       return Row(
@@ -246,7 +244,7 @@ class ChatScreenState extends State<ChatScreen> {
                         ),
                         onPressed: () {
                           Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => FullPhoto(url: document.data()['content'])));
+                              MaterialPageRoute(builder: (context) => FullPhoto(url: document.data()['content'], heightAppbar: heightAppbar,)));
                         },
                         padding: EdgeInsets.all(0),
                       ),
@@ -275,19 +273,16 @@ class ChatScreenState extends State<ChatScreen> {
                 isLastMessageLeft(index)
                     ? Material(
                         child: CachedNetworkImage(
-                          placeholder: (context, url) => Container(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 1.0,
-                              valueColor: AlwaysStoppedAnimation<Color>(themeColor),
-                            ),
-                            width: 35.0,
-                            height: 35.0,
-                            padding: EdgeInsets.all(10.0),
-                          ),
                           imageUrl: '',
-                          width: 35.0,
-                          height: 35.0,
-                          fit: BoxFit.cover,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover),
+                            ),
+                          ),
+                          placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.account_circle),
                         ),
                         borderRadius: BorderRadius.all(
                           Radius.circular(18.0),
@@ -349,7 +344,7 @@ class ChatScreenState extends State<ChatScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => FullPhoto(url: document.data()['content'])));
+                                        builder: (context) => FullPhoto(url: document.data()['content'], heightAppbar: heightAppbar)));
                               },
                               padding: EdgeInsets.all(0),
                             ),
@@ -423,7 +418,7 @@ class ChatScreenState extends State<ChatScreen> {
           Column(
             children: <Widget>[
               // List of messages
-              buildListMessage(),
+              buildListMessage(widget.heightAppbar),
 
               // Sticker
               (isShowSticker ? buildSticker() : Container()),
@@ -622,7 +617,7 @@ class ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget buildListMessage() {
+  Widget buildListMessage(double height) {
     return Flexible(
       child: groupChatId == ''
           ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(themeColor)))
@@ -642,7 +637,7 @@ class ChatScreenState extends State<ChatScreen> {
                   listMessage.addAll(snapshot.data.documents);
                   return ListView.builder(
                     padding: EdgeInsets.all(10.0),
-                    itemBuilder: (context, index) => buildItem(index, snapshot.data.documents[index]),
+                    itemBuilder: (context, index) => buildItem(index, snapshot.data.documents[index], height),
                     itemCount: snapshot.data.documents.length,
                     reverse: true,
                     controller: listScrollController,

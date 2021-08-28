@@ -20,6 +20,7 @@ Widget textViewCenter(String text, Color color, double size, FontWeight fontWeig
     text,
     textAlign: TextAlign.center,
     style: GoogleFonts.bungee(
+      height: 1.5,
       textStyle: TextStyle(
           color: color,
       ),

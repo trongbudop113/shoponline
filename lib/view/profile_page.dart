@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/view/app_bar_page.dart';
 import 'package:flutter_project/view/cart_page.dart';
 import 'package:flutter_project/view/favorite_page.dart';
+import 'package:flutter_project/widget/image_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -90,6 +92,7 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
           ),
         ),
         child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
               child: Container(
@@ -266,7 +269,19 @@ class _ProfilePageState extends State<ProfilePage> implements AppbarContract {
                             child: Container(
                               width: 150,
                               height: 150,
-                              color: BLACK,
+                              color: Colors.grey.shade200,
+                              child: CachedNetworkImage(
+                                imageUrl: '',
+                                imageBuilder: (context, imageProvider) => Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover),
+                                  ),
+                                ),
+                                placeholder: (context, url) => CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => Icon(Icons.person, size: 100),
+                              ),
                             ),
                           ),
                         ],

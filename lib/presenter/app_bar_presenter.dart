@@ -30,7 +30,7 @@ class AppbarPresenter {
     if(isLogin){
       _view.goToCartPage();
     }else{
-      _view.showDialogLogin('aaaaaaaaa');
+      _view.showDialogLogin('Bạn cần đăng nhập trước khi thêm vào giỏ hàng.');
     }
   }
 
@@ -75,7 +75,7 @@ class AppbarPresenter {
     if(isLogin){
       _view.goToFavoritePage();
     }else{
-      _view.showDialogLogin('aaaaaaaaa');
+      _view.showDialogLogin('Bạn cần đăng nhập trước khi thêm vào giỏ hàng.');
     }
   }
 

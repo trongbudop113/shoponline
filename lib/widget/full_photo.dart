@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_project/view/app_bar_page.dart';
 import 'package:photo_view/photo_view.dart';
 
 class FullPhoto extends StatelessWidget {
   final String url;
+  final double heightAppbar;
 
-  FullPhoto({Key key, @required this.url}) : super(key: key);
+  FullPhoto({Key key, @required this.url, this.heightAppbar}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'FULL PHOTO',
-          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBarNormal(heightAppbar: heightAppbar),
       body: FullPhotoScreen(url: url),
     );
   }

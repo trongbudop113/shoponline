@@ -1,8 +1,11 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_project/api/body_right_api.dart';
 import 'package:flutter_project/common/common.dart';
+import 'package:flutter_project/dialog/accept_dialog.dart';
+import 'package:flutter_project/dialog/error_dialog.dart';
 import 'package:flutter_project/dialog/progress_dialog.dart';
 import 'package:flutter_project/model/body_right.dart';
 import 'package:flutter_project/model/cart.dart';
@@ -15,6 +18,7 @@ import 'package:flutter_project/presenter/home/cart_presenter.dart';
 import 'package:flutter_project/values/color_page.dart';
 import 'package:flutter_project/view/app_bar_page.dart';
 import 'package:flutter_project/view/cart_page.dart';
+import 'package:flutter_project/view/login_page.dart';
 import 'package:flutter_project/widget/image_widget.dart';
 import 'package:flutter_project/widget/text_widget.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -51,6 +55,25 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
     super.initState();
   }
 
+  Future<dynamic> downloadImageUrl() async {
+    return FirebaseStorage.instance.ref().child('products/images/4028da1c-4c99-483a-a7cc-0ce1d009eab5.jpg').getDownloadURL();
+  }
+
+  // Future<Widget> _getImage(BuildContext context, String image) async {
+  //   Image m;
+  //   await FireStorageService.loadFromStorage(context, 'products/images/4028da1c-4c99-483a-a7cc-0ce1d009eab5.jpg')
+  //       .then((downloadUrl) {
+  //         print('aaaaaaaaaaaaa' + downloadUrl);
+  //     m = Image.network(
+  //         downloadUrl.toString(),
+  //         fit: BoxFit.cover,
+  //       color: Colors.red,
+  //     );
+  //   });
+  //
+  //   return m;
+  // }
+
   void loadHeightAppbar(){
     if (kIsWeb) {
       heightAppbar = 60.0;
@@ -72,7 +95,32 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
           Container(
             width: isPort ? itemWidth : 650,
             height: isPort ? itemWidth : 650,
-            child: customImageView('https://giayxshop.vn/wp-content/uploads/2019/02/MG_4329.jpg'),
+            child: FutureBuilder<dynamic >(
+              future: downloadImageUrl(),
+              builder:(context, snapshot) {
+                if (snapshot.connectionState ==
+                    ConnectionState.done)
+                  return Container(
+                    color: Colors.grey.shade200,
+                    height:
+                    MediaQuery.of(context).size.height / 1.25,
+                    width:
+                    MediaQuery.of(context).size.width / 1.25,
+                    child: Image.network(snapshot.data.toString(), fit: BoxFit.cover),
+                  );
+
+                if (snapshot.connectionState ==
+                    ConnectionState.waiting)
+                  return Container(
+                      height: MediaQuery.of(context).size.height /
+                          1.25,
+                      width: MediaQuery.of(context).size.width /
+                          1.25,
+                      child: CircularProgressIndicator());
+
+                return Container(color: Colors.red,);
+              },
+            )
           ),
           Container(
             width: isPort ? itemWidth : 650,
@@ -183,9 +231,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
                       textView('Màu sắc:', BLACK, 15, FontWeight.normal),
                       SizedBox(width: 20),
                       Container(
-                        width: itemWidth * 0.7,
                         height: 45,
                         child: ListView.builder(
+                          shrinkWrap: true,
                           itemCount: bodyRightNotifier.currentProduct.colors.length,
                           physics: BouncingScrollPhysics(),
                           scrollDirection: Axis.horizontal,
@@ -195,13 +243,13 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
                                 padding: EdgeInsets.all(5.0),
                                 width: 45,
                                 height: 40,
-                                color: bodyRightNotifier.currentColor == bodyRightNotifier.currentProduct.colors[index] ? BLACK : Colors.transparent,
+                                color: context.watch<BodyRightNotifier>().currentColor == bodyRightNotifier.currentProduct.colors[index] ? BLACK : Colors.transparent,
                                 child: Container(
                                   color: Color(int.parse(bodyRightNotifier.currentProduct.colors[index].toString())),
                                 ),
                               ),
                               onTap: (){
-                                bodyRightNotifier.currentColor = bodyRightNotifier.currentProduct.colors[index];
+                                context.read<BodyRightNotifier>().currentColor = bodyRightNotifier.currentProduct.colors[index];
                               },
                             );
                           },
@@ -227,15 +275,21 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
                             physics: BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              return Container(
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.only(left: 5.0),
-                                width: 60,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    border: Border.all(width: 1)
+                              return InkWell(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.only(left: 5.0),
+                                  width: 60,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(width: 1),
+                                    color: context.watch<BodyRightNotifier>().currentSize == bodyRightNotifier.currentProduct.sizes[index] ? Colors.grey[600] : Colors.transparent,
+                                  ),
+                                  child: textView(bodyRightNotifier.currentProduct.sizes[index].toString(), BLACK, 18, FontWeight.normal),
                                 ),
-                                child: textView(bodyRightNotifier.currentProduct.sizes[index].toString(), BLACK, 18, FontWeight.normal),
+                                onTap: (){
+                                  context.read<BodyRightNotifier>().currentSize = bodyRightNotifier.currentProduct.sizes[index];
+                                },
                               );
                             },
                           ),
@@ -332,7 +386,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
               height: 60,
               child: VerticalDivider(color: WHITE, width: 1),
             ),
-            GestureDetector(
+            InkWell(
               child: Container(
                 alignment: Alignment.center,
                 height: 60,
@@ -349,7 +403,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
               height: 60,
               child: VerticalDivider(color: WHITE, width: 1),
             ),
-            GestureDetector(
+            InkWell(
               child: Container(
                 alignment: Alignment.center,
                 height: 60,
@@ -387,8 +441,16 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
   }
 
   @override
-  void showDialogLogin(String message) {
-
+  Future<void> showDialogLogin(String message) async {
+    var a = await showDialog(
+      context: context,
+      builder: (_) => AcceptDialog(title: 'Thông báo', msg: message),
+    );
+    if(a.toString().toLowerCase() == 'yes'){
+      Navigator.push(context, MaterialPageRoute(
+          builder: (context) => LoginPage()
+      ));
+    }
   }
 
   @override
@@ -412,7 +474,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> implements CartContract
 
   @override
   void showMessageError(String message, BuildContext buildContext) {
-    print('aaaaaaa');
+    showDialog(
+      context: context,
+      builder: (_) => ErrorDialog(title: 'Thông báo', msg: message),
+    );
   }
 
   @override

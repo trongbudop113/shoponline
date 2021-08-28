@@ -140,11 +140,12 @@ class _HomePageState extends State<HomePage> implements HomeContract {
   Widget build(BuildContext context) {
 
     var itemWidth = MediaQuery.of(context).size.width;
-    var itemHeight = MediaQuery.of(context).size.height;
     var itemWidthCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeightCustom = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
 
     var widthLeft = ((itemWidth - ((itemWidth * 0.08))) * 0.13) > 70.0 ? ((itemWidth - (2 * (itemWidth * 0.08))) * 0.13) : 70.0;
+    var widthRight = (itemWidth - ((itemWidth * 0.08))) - (widthLeft + 5);
+    var itemHeight = (widthRight / (Common.isPortrait(context) ? 2 : 4)) * (4/3);
 
     MenuLeftNotifier menuLeftNotifier = Provider.of<MenuLeftNotifier>(context);
     BodyRightNotifier bodyRightNotifier = Provider.of<BodyRightNotifier>(context);
@@ -161,7 +162,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
           SliverToBoxAdapter(
             child: Container(
               margin: EdgeInsets.all(itemWidthCustom * 0.02),
-              height: itemHeightCustom,
+              height: Common.isPortrait(context) ? (itemHeight * 2) + 150 : (itemHeight + 150),
               width: itemWidth,
               child: Row(
                 children: [
@@ -201,7 +202,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
                       )
                   ),
                   Container(
-                      width: (itemWidth - ((itemWidth * 0.08))) - (widthLeft + 5),
+                      width: widthRight,
                       padding: EdgeInsets.only(left: itemWidth * 0.01),
                       child: Stack(
                         children: [
@@ -214,6 +215,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
                             height: itemHeightCustom,
                             homePresenter: homePresenter,
                             menuLeft: menuLeftNotifier.currentCategory,
+                            withRight: widthRight,
                           ),
                           _isShow ? Center(
                             child: IndicatorProgress(),
@@ -249,9 +251,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
 
   @override
   Future<void> goToLogin() async {
-    var a = await Navigator.push(context, MaterialPageRoute(
-        builder: (context) => LoginPage()
-    ));
+    var a = await Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
     if(a.toString() != null){
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String uid = prefs.getString(Common.UUID) ?? '';
