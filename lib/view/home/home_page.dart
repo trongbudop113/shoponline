@@ -174,9 +174,11 @@ class _HomePageState extends State<HomePage> implements HomeContract {
                           return InkWell(
                               hoverColor: Colors.white,
                               onTap: (){
-                                menuLeftNotifier.currentCategory = menuLeftNotifier.categoryList[index];
-                                menuLeftNotifier.currentIndex = index;
-                                getProductsData(bodyRightNotifier, menuLeftNotifier.currentCategory);
+                                if(menuLeftNotifier.currentCategory != menuLeftNotifier.categoryList[index]){
+                                  menuLeftNotifier.currentCategory = menuLeftNotifier.categoryList[index];
+                                  menuLeftNotifier.currentIndex = index;
+                                  getProductsData(bodyRightNotifier, menuLeftNotifier.currentCategory);
+                                }
                               },
                               child: Container(
                                 height: 70,

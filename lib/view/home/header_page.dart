@@ -104,7 +104,7 @@ class _HeaderPageState extends State<HeaderPage> {
 
     var itemWidth = !Common.isPortrait(context) ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     var itemHeight = !Common.isPortrait(context) ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.width;
-    var sizeTextCustom = (itemHeight * 0.05) > 30 ? 30 : (itemHeight * 0.05);
+    var sizeTextCustom = (itemHeight * 0.05) > 30.0 ? 30.0 : (itemHeight * 0.05);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: itemWidth * 0.02),

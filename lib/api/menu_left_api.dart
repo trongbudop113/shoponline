@@ -72,15 +72,18 @@ getCountCart(AuthNotifier authNotifier, CartNotifier cartNotifier) async{
 
 getProductsData(BodyRightNotifier bodyRightNotifier, MenuLeft products) async {
   bodyRightNotifier.currentLoading = true;
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
+  var snapshot = FirebaseFirestore.instance
       .collection(DatabaseCollection.ALL_PRODUCT)
-      .orderBy("createdAt", descending: true).where('category', isEqualTo: '${products.id}')
-      .limit(4)
-      .get();
+      .orderBy("createdAt", descending: true).where('category', isEqualTo: '${products.id}');
+
+  QuerySnapshot data1 = await snapshot.limit(4).get();
+  QuerySnapshot data2 = await snapshot.get();
 
   List<BodyRight> _productList = [];
 
-  snapshot.docs.forEach((document) {
+  bodyRightNotifier.paging = data2.docs.length ~/ 4 + 1;
+
+  data1.docs.forEach((document) {
     BodyRight food = BodyRight.fromMap(document.data());
     _productList.add(food);
   });

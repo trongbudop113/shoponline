@@ -169,7 +169,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
                                   child: Column(
                                     children: [
                                       Container(
-                                        child: textView(item.toString(), WHITE, sizeTextName, FontWeight.bold),
+                                        child: textView(item.name.toString(), WHITE, sizeTextName, FontWeight.bold),
                                       ),
                                       Container(
                                         child: textView(item.price.toString(), WHITE, sizeTextName, FontWeight.normal),
@@ -368,7 +368,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
             height: Common.isPortrait(context) ? 25 : 30,
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: 5,
+              itemCount: context.watch<BodyRightNotifier>().paging,
               physics: BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
@@ -383,7 +383,7 @@ class _ContainBodyRightState extends State<ContainBodyRight>{
                     height: Common.isPortrait(context) ? 25 : 30,
                     child: Container(
                       alignment: Alignment.center,
-                      child: textView('1', Colors.white, Common.isPortrait(context) ? 12 : 15, FontWeight.bold),
+                      child: textView('${index + 1}', Colors.white, Common.isPortrait(context) ? 12 : 15, FontWeight.bold),
                     ),
                   ),
                   onTap: (){

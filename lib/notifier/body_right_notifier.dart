@@ -8,6 +8,7 @@ class BodyRightNotifier with ChangeNotifier {
   String _currentColor;
   String _currentSize;
   bool _isLoading = false;
+  int _paging = 1;
 
   UnmodifiableListView<BodyRight> get productList => UnmodifiableListView(_productList);
 
@@ -15,6 +16,12 @@ class BodyRightNotifier with ChangeNotifier {
   String get currentColor => _currentColor;
   String get currentSize => _currentSize;
   bool get currentLoading => _isLoading;
+  int get paging => _paging;
+
+  set paging(int paging) {
+    _paging = paging;
+    notifyListeners();
+  }
 
   set productList(List<BodyRight> productList) {
     _productList = productList;
