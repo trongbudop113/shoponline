@@ -41,5 +41,12 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+		<key>NSCameraUsageDescription</key>
+    	<string>Please allow app to access camera to update profile and report incident</string>
+    	<key>NSLocationWhenInUseUsageDescription</key>
+    	<string>Please allow app to access your location for Report feature</string>
+    	<key>NSPhotoLibraryUsageDescription</key>
+    	<string>Please allow app to access photo library to update profile and report incident</string>
 </dict>
 </plist>
